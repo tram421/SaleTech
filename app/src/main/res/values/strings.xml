@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">SaleTech</string>
+    <string name="home">Trang chủ</string>
+    <string name="user">Người dùng</string>
+    <string name="cart">Giỏ hàng</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>
