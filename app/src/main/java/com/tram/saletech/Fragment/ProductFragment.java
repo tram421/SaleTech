@@ -82,7 +82,7 @@ public class ProductFragment extends Fragment {
         return v;
     }
 
-    //Hàm lấy ảnh từ internet về
+    //Lấy ảnh từ internet về
     private class LoadImage extends AsyncTask<String, Void, Bitmap> {
         ImageView bmImage;
 

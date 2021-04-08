@@ -14,6 +14,7 @@ import androidx.viewpager.widget.ViewPager;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.tram.saletech.API.ResultAPI;
@@ -24,6 +25,7 @@ public class MainActivity extends AppCompatActivity {
     ViewPager mViewPager;
     BottomNavigationView bottomNavigationView;
     Navigation mnavigation = new Navigation();
+    int mPressBackCount = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +48,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        mnavigation.pressBackNavigation();
-//        super.onBackPressed();
+        mPressBackCount++;
+        if(mPressBackCount<2){
+            mnavigation.pressBackNavigation();
+            Toast.makeText(this, "Nhấn Back lần nữa để thoát", Toast.LENGTH_SHORT).show();
+        } else {
+            super.onBackPressed();
+        }
     }
 }
