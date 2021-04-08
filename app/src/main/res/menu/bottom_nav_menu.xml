@@ -5,6 +5,10 @@
         android:icon="@drawable/ic_home"
         android:title="@string/home" />
     <item
+        android:id="@+id/navigation_product_activity"
+        android:icon="@drawable/ic_prodcut"
+        android:title="@string/product" />
+    <item
         android:id="@+id/navigation_user"
         android:icon="@drawable/ic_user"
         android:title="@string/user" />
