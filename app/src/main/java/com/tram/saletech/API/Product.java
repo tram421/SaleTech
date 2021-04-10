@@ -1,5 +1,15 @@
 package com.tram.saletech.API;
 
+import android.util.Log;
+
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+
 public class Product {
 
         private String id;
@@ -13,103 +23,101 @@ public class Product {
         private String similar;
         private String isFeature;
 
+    public Product() {
+    }
 
-        public Product() {
-        }
+    public Product(String id, String name, String image, String price, String sale, String description, String idCategory, String rate, String similar, String isFeature) {
+        this.id = id;
+        this.name = name;
+        this.image = image;
+        this.price = price;
+        this.sale = sale;
+        this.description = description;
+        this.idCategory = idCategory;
+        this.rate = rate;
+        this.similar = similar;
+        this.isFeature = isFeature;
+    }
 
-        public Product(String id, String name, String image, String price, String sale, String description, String idCategory, String rate, String similar, String isFeature) {
-            super();
-            this.id = id;
-            this.name = name;
-            this.image = image;
-            this.price = price;
-            this.sale = sale;
-            this.description = description;
-            this.idCategory = idCategory;
-            this.rate = rate;
-            this.similar = similar;
-            this.isFeature = isFeature;
-        }
+    public String getId() {
+        return id;
+    }
 
-        public String getId() {
-            return id;
-        }
+    public void setId(String id) {
+        this.id = id;
+    }
 
-        public void setId(String id) {
-            this.id = id;
-        }
+    public String getName() {
+        return name;
+    }
 
-        public String getName() {
-            return name;
-        }
+    public void setName(String name) {
+        this.name = name;
+    }
 
-        public void setName(String name) {
-            this.name = name;
-        }
+    public String getImage() {
+        return image;
+    }
 
-        public String getImage() {
-            return image;
-        }
+    public void setImage(String image) {
+        this.image = image;
+    }
 
-        public void setImage(String image) {
-            this.image = image;
-        }
+    public String getPrice() {
+        return price;
+    }
 
-        public String getPrice() {
-            return price;
-        }
+    public void setPrice(String price) {
+        this.price = price;
+    }
 
-        public void setPrice(String price) {
-            this.price = price;
-        }
+    public String getSale() {
+        return sale;
+    }
 
-        public String getSale() {
-            return sale;
-        }
+    public void setSale(String sale) {
+        this.sale = sale;
+    }
 
-        public void setSale(String sale) {
-            this.sale = sale;
-        }
+    public String getDescription() {
+        return description;
+    }
 
-        public String getDescription() {
-            return description;
-        }
+    public void setDescription(String description) {
+        this.description = description;
+    }
 
-        public void setDescription(String description) {
-            this.description = description;
-        }
+    public String getIdCategory() {
+        return idCategory;
+    }
 
-        public String getIdCategory() {
-            return idCategory;
-        }
+    public void setIdCategory(String idCategory) {
+        this.idCategory = idCategory;
+    }
 
-        public void setIdCategory(String idCategory) {
-            this.idCategory = idCategory;
-        }
+    public String getRate() {
+        return rate;
+    }
 
-        public String getRate() {
-            return rate;
-        }
+    public void setRate(String rate) {
+        this.rate = rate;
+    }
 
-        public void setRate(String rate) {
-            this.rate = rate;
-        }
+    public String getSimilar() {
+        return similar;
+    }
 
-        public String getSimilar() {
-            return similar;
-        }
+    public void setSimilar(String similar) {
+        this.similar = similar;
+    }
 
-        public void setSimilar(String similar) {
-            this.similar = similar;
-        }
+    public String getIsFeature() {
+        return isFeature;
+    }
 
-        public String getIsFeature() {
-            return isFeature;
-        }
-
-        public void setIsFeature(String isFeature) {
-            this.isFeature = isFeature;
-        }
+    public void setIsFeature(String isFeature) {
+        this.isFeature = isFeature;
+    }
 
     @Override
     public String toString() {
@@ -126,4 +134,34 @@ public class Product {
                 ", isFeature='" + isFeature + '\'' +
                 '}';
     }
+
+    //dữ liệu giả
+    public static ArrayList<Product> getMock(){
+
+        ArrayList<Product> products = new ArrayList<>();
+        //get API
+        ResultAPI resultAPI = new ResultAPI();
+        resultAPI.init();
+
+        resultAPI.resultProductAPI().enqueue(new Callback<List<Product>>() {
+            @Override
+            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+//                products.add(response.body().get(0));
+                products.add(response.body().get(0));
+                Log.d("BBB", "Trong response: " + products.toString());
+
+            }
+            @Override
+            public void onFailure(Call<List<Product>> call, Throwable t) {
+                Log.d("BBB",  "Lỗi: "+ t.getMessage());
+            }
+        });
+//        return ListProduct;
+//    }
+        return products;
+
+
+    }
+
+
 }

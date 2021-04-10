@@ -39,9 +39,8 @@ public class MainActivity extends AppCompatActivity {
         mnavigation.setupViewPager(mViewPager, bottomNavigationView, this);
         //API
         ResultAPI resultAPI = new ResultAPI();
-        resultAPI.resultUserAPI();
-        Log.d("BBB", "ngăn \n");
-        resultAPI.resultProductAPI();
+//        resultAPI.resultUserAPI();
+//        resultAPI.resultProductAPI();
 
 
     }
@@ -51,7 +50,8 @@ public class MainActivity extends AppCompatActivity {
         mPressBackCount++;
         if(mPressBackCount<2){
             mnavigation.pressBackNavigation();
-            Toast.makeText(this, "Nhấn Back lần nữa để thoát", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Nhấn Back lần nữa để thoát app", Toast.LENGTH_SHORT).show();
+            mPressBackCount = 0;
         } else {
             super.onBackPressed();
         }

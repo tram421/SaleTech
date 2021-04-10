@@ -19,7 +19,30 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class ResultAPI {
     private APIRequest apiRequest;
-    private void init(){
+    private List<Product> kq;
+    private String name ="";
+
+    public void setKq(List<Product> kq) {
+        this.kq = kq;
+    }
+
+    public List<Product> getKq() {
+        return kq;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public APIRequest getApiRequest() {
+        return apiRequest;
+    }
+
+    public void init(){
         //get API
         OkHttpClient okHttpClient = new OkHttpClient.Builder()
                 .readTimeout(30, TimeUnit.SECONDS)
@@ -56,22 +79,14 @@ public class ResultAPI {
 
 
     }
-    public void resultProductAPI() {
+    public Call<List<Product>> resultProductAPI() {
         init();
+//        this.kq = kq;
         //Lấy dữ liệu của product
         Call<List<Product>> callbackProduct = this.apiRequest.fetchProduct();
 
-        callbackProduct.enqueue(new Callback<List<Product>>() {
-            @Override
-            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
-                Log.d("BBB", response.body().toString());
-            }
+        return callbackProduct;
 
-            @Override
-            public void onFailure(Call<List<Product>> call, Throwable t) {
-                Log.d("BBB", "Lỗi");
-            }
-        });
     }
 
 }
