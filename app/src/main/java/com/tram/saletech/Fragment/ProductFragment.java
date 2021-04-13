@@ -1,26 +1,14 @@
 package com.tram.saletech.Fragment;
 
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.os.AsyncTask;
 import android.os.Bundle;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
-import okhttp3.OkHttpClient;
-import okhttp3.Protocol;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
-import retrofit2.Retrofit;
-import retrofit2.converter.gson.GsonConverterFactory;
 
-import android.os.Handler;
-import android.os.Looper;
-import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,23 +16,15 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.tram.saletech.API.APIRequest;
+//import com.tram.saletech.API.CallAPIService;
+import com.tram.saletech.API.MyFlag;
 import com.tram.saletech.API.Product;
 import com.tram.saletech.API.ResultAPI;
-import com.tram.saletech.Activities.MainActivity;
 import com.tram.saletech.R;
 import com.tram.saletech.RecyclerView.ProductAdapter;
 
-import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
-import java.util.ListIterator;
-import java.util.concurrent.TimeUnit;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -56,8 +36,10 @@ public class ProductFragment extends Fragment {
     List<Product> mArr;
     ProductAdapter mAdapter;
     ImageView imageView;
-    
+    MyFlag myFlagAPI = new MyFlag(0);
     ImageView bmImage;
+
+//    CallAPIService mCallAPIProduct;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -96,9 +78,14 @@ public class ProductFragment extends Fragment {
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-
-
         }
+
+
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
     }
 
     @Override
@@ -107,89 +94,35 @@ public class ProductFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_product, container, false);
         mRecyclerView = v.findViewById(R.id.recyclerViewProduct);
-
+        mRecyclerView.setLayoutManager(new GridLayoutManager(getContext(), 2));
         
         mArr = new ArrayList<>();
-        ResultAPI resultAPI = new ResultAPI();
-        resultAPI.init();
-
-        resultAPI.resultProductAPI().enqueue(new Callback<List<Product>>() {
-            @Override
-            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
-//                products.add(response.body().get(0));
-                for (int i = 0; i < response.body().size(); i++) {
-                    mArr.add(response.body().get(i));
-                }
-//                mArr.add(response.body().get(0));
-//                mArr.add(response.body().get(1));
-//                Log.d("BBB", "Trong response: " + products.toString());
-                Log.d("BBB", "Trong response: " + mArr + "");
-            }
-            @Override
-            public void onFailure(Call<List<Product>> call, Throwable t) {
-                Log.d("BBB",  "Lỗi: "+ t.getMessage());
-            }
-        });
-
-        final Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
+        //Tạo 1 thread riêng đọc API, Quá trình đọc khá chậm không muốn ảnh hưởng đến main thread
+        Thread threadAPIProduct = new Thread(new Runnable() {
             @Override
             public void run() {
-                mAdapter = new ProductAdapter(mArr);
-                mRecyclerView.setAdapter(mAdapter);
-                Log.d("BBB", "ngoai response: " + mArr + "");
-            }
-        }, 1000);
+                synchronized (myFlagAPI) {
+                        ResultAPI resultAPI = new ResultAPI();
+                        resultAPI.init();
+                        resultAPI.resultProductAPI().enqueue(new Callback<List<Product>>() {
+                            @Override
+                            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                                mArr = response.body();
+                                mAdapter = new ProductAdapter(mArr);
+                                mRecyclerView.setAdapter(mAdapter);
+                            }
 
-
-
-
-
-
-
-
-
-//        Toast.makeText(getContext(), resultAPI.getKq()+"", Toast.LENGTH_SHORT).show();
-//        Log.d("AAA", String.valueOf(resultAPI.getKq().get(0).getId()));
-//        final String imgURL  = resultAPI.getKq().get('image');
-//        new ProductFragment.LoadImage(bmImage).execute(imgURL);
-//        imageView.setImageBitmap();
-//        resultAPI.getKq();
-
-
-//        mArr =
-        // Inflate the layout for this fragment
-
-//        bmImage = v.findViewById(R.id.imageView1);
-//        final String imgURL  = "http://maitram.net/api/image/tv01.jpg";
-//        new ProductFragment.LoadImage(bmImage).execute(imgURL);
-
+                            @Override
+                            public void onFailure(Call<List<Product>> call, Throwable t) {
+                                Log.d("BBB", "Lỗi 111 (đọc API): " + t.getMessage());
+                                Toast.makeText(getActivity(), "Lỗi 111", Toast.LENGTH_SHORT).show();
+                            }
+                        });
+                    }
+                }
+            });
+        threadAPIProduct.start();
         return v;
     }
 
-    //Lấy ảnh từ internet về
-//    public static class LoadImage extends AsyncTask<String, Void, Bitmap> {
-//        ImageView bmImage;
-//
-//        public LoadImage(ImageView bmImage) {
-//            this.bmImage = bmImage;
-//        }
-//
-//        protected Bitmap doInBackground(String... urls) {
-//            String urlOfImage = urls[0];
-//            Bitmap mIcon11 = null;
-//            try {
-//                InputStream in = new java.net.URL(urlOfImage).openStream();
-//                mIcon11 = BitmapFactory.decodeStream(in);
-//            } catch (Exception e) {
-//                Log.e("Error", e.getMessage());
-//                e.printStackTrace();
-//            }
-//            return mIcon11;
-//        }
-//
-//        protected void onPostExecute(Bitmap result) {
-//            bmImage.setImageBitmap(result);
-//        }
-//    }
 }

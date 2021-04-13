@@ -38,7 +38,7 @@ public class MainActivity extends AppCompatActivity {
 
         mnavigation.setupViewPager(mViewPager, bottomNavigationView, this);
         //API
-        ResultAPI resultAPI = new ResultAPI();
+//        ResultAPI resultAPI = new ResultAPI();
 //        resultAPI.resultUserAPI();
 //        resultAPI.resultProductAPI();
 

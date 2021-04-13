@@ -73,7 +73,7 @@ public class ResultAPI {
 
             @Override
             public void onFailure(Call<List<User>> call, Throwable t) {
-                Log.d("BBB", "Lỗi");
+                Log.d("BBB", "Lỗi: " + t.getMessage());
             }
         });
 

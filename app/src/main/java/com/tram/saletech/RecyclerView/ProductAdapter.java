@@ -3,6 +3,7 @@ package com.tram.saletech.RecyclerView;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.AsyncTask;
+import android.text.Html;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +16,11 @@ import com.tram.saletech.Fragment.ProductFragment;
 import com.tram.saletech.R;
 
 import java.io.InputStream;
+import java.lang.reflect.Array;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.List;
+import java.util.Locale;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -38,14 +43,24 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ProductV
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
         Product product = mArrProduct.get(position);
-        final String imgURL  = "http://maitram.net/api/image/tv01.jpg";
-//        final String imgURL  = product.getImage();
+        int price = Integer.parseInt(product.getPrice());
+        int sale = Integer.parseInt(product.getSale());
+        float  percent = 100 - ((float)((float)sale/(float)price)*100);
+        final String imgURL  = "http://maitram.net/" + product.getImage();
         new ProductAdapter.LoadImage(holder.mTvimageProduct).execute(imgURL);
         holder.mTvNameProduct.setText(product.getName());
-        holder.mTvsale.setText(product.getSale());
-        holder.mTvprice.setText(product.getPrice());
+        holder.mTvsale.setText(String.format("%,d",sale) + "đ");
+//        holder.mTvprice.setText(product.getPrice());
+        holder.mTvprice.setText(Html.fromHtml(
+                "<del>"
+                + String.format("%,d", price) + "đ"
+                + "</del>" ));
+        if(percent > 0){
+            holder.mTvpercentCostSale.setText( "-" + Math.round(percent) + "%" );
+        } else {
+            holder.mTvpercentCostSale.setText("");
+        }
 
-        holder.mTvpercentCostSale.setText("Giảm");
     }
 
     @Override
