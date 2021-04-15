@@ -148,7 +148,6 @@ public class Product {
             public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
 //                products.add(response.body().get(0));
                 products.add(response.body().get(0));
-                Log.d("BBB", "Trong response: " + products.toString());
 
             }
             @Override

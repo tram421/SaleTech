@@ -24,7 +24,7 @@ import com.tram.saletech.navigation.Navigation;
 public class MainActivity extends AppCompatActivity {
     ViewPager mViewPager;
     BottomNavigationView bottomNavigationView;
-    Navigation mnavigation = new Navigation();
+    Navigation mNavigation = new Navigation();
     int mPressBackCount = 0;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -34,13 +34,8 @@ public class MainActivity extends AppCompatActivity {
         //bottom navigation
         mViewPager = findViewById(R.id.home_viewPager);
         bottomNavigationView = findViewById(R.id.bottomNav_view);
-//        setupViewPager();
-
-        mnavigation.setupViewPager(mViewPager, bottomNavigationView, this);
-        //API
-//        ResultAPI resultAPI = new ResultAPI();
-//        resultAPI.resultUserAPI();
-//        resultAPI.resultProductAPI();
+        //setupViewPager();
+        mNavigation.setupViewPager(mViewPager, bottomNavigationView, this);
 
 
     }
@@ -49,7 +44,7 @@ public class MainActivity extends AppCompatActivity {
     public void onBackPressed() {
         mPressBackCount++;
         if(mPressBackCount<2){
-            mnavigation.pressBackNavigation();
+            mNavigation.pressBackNavigation();
             Toast.makeText(this, "Nhấn Back lần nữa để thoát app", Toast.LENGTH_SHORT).show();
             mPressBackCount = 0;
         } else {
