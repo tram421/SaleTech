@@ -1,4 +1,4 @@
-package com.tram.saletech.navigation;
+package com.tram.saletech.Navigation;
 
 public interface pressBack {
         void pressBack();

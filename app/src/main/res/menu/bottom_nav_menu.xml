@@ -5,7 +5,7 @@
         android:icon="@drawable/ic_home"
         android:title="@string/home" />
     <item
-        android:id="@+id/navigation_product_activity"
+        android:id="@+id/navigation_product"
         android:icon="@drawable/ic_prodcut"
         android:title="@string/product" />
     <item

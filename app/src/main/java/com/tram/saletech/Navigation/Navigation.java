@@ -1,4 +1,4 @@
-package com.tram.saletech.navigation;
+package com.tram.saletech.Navigation;
 
 import android.view.MenuItem;
 
@@ -42,7 +42,7 @@ public class Navigation {
                         bottomNavigationView.getMenu().findItem(R.id.navigation_home).setChecked(true);
                         break;
                     case 1:
-                        bottomNavigationView.getMenu().findItem(R.id.navigation_product_activity).setChecked(true);
+                        bottomNavigationView.getMenu().findItem(R.id.navigation_product).setChecked(true);
                         break;
                     case 2:
                         bottomNavigationView.getMenu().findItem(R.id.navigation_user).setChecked(true);
@@ -65,7 +65,7 @@ public class Navigation {
                     case R.id.navigation_home:
                         mViewPager.setCurrentItem(0);
                         break;
-                    case R.id.navigation_product_activity:
+                    case R.id.navigation_product:
                         mViewPager.setCurrentItem(1);
                         break;
                     case R.id.navigation_user:

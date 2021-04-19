@@ -1,33 +1,36 @@
 package com.tram.saletech.Fragment;
 
 import android.content.Context;
-import android.os.AsyncTask;
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.GridLayoutManager;
-import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tram.saletech.API.MyFlag;
 import com.tram.saletech.API.Product;
 import com.tram.saletech.API.ResultAPI;
+import com.tram.saletech.Activities.MainActivity;
 import com.tram.saletech.R;
 import com.tram.saletech.RecyclerView.PaginationScrollListener;
 import com.tram.saletech.RecyclerView.ProductAdapter;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**
@@ -39,7 +42,14 @@ public class ProductFragment extends Fragment {
     RecyclerView mRecyclerView;
     List<Product> mArr = new ArrayList<>();
     List<Product> mListAPI;
+    TextView textView;
+    MainActivity mainActivity;
+    public String mDataSearch;
+//    public interface ReceiveData{
+//        public void data(String data);
+//    }
 
+//    ReceiveData receiveData;
     ProductAdapter mAdapter;
     private boolean isLoading;
     private boolean isLastpage = false;
@@ -48,6 +58,7 @@ public class ProductFragment extends Fragment {
     private int totalPage = 0;
     private int totalItem = 0;
     private boolean mFlag = false;
+
 
 
     MyFlag myFlagAPI = new MyFlag(0);
@@ -95,11 +106,21 @@ public class ProductFragment extends Fragment {
     }
 
     @Override
+    public void onAttach(@NonNull Context context) {
+        super.onAttach(context);
+
+//        receiveData = (ReceiveData) getActivity();
+//
+    }
+
+
+    @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.fragment_product, container, false);
-
+         mainActivity = (MainActivity) getActivity();
+        textView = v.findViewById(R.id.test);
         mRecyclerView = v.findViewById(R.id.recyclerViewProduct);
 
 
@@ -143,7 +164,7 @@ public class ProductFragment extends Fragment {
 
             @Override
             public boolean isLastPage() {
-                Log.d("BBB","cuoi trang");
+//                Log.d("BBB","cuoi trang");
                 if(currentPage >= totalPage && mFlag == false){
                     mAdapter.removeFooterLoading();
                     mFlag = true;
@@ -184,10 +205,10 @@ public class ProductFragment extends Fragment {
             endItem = totalItem;
 
         }
-        Log.d("BBB",startItem + ": startItem");
-        Log.d("BBB",endItem + ": endItem");
+//        Log.d("BBB",startItem + ": startItem");
+//        Log.d("BBB",endItem + ": endItem");
 
-        Log.d("BBB","-----------------------------------------------------------");
+//        Log.d("BBB","-----------------------------------------------------------");
         if (mListAPI.size() > 0 && startItem < totalItem) {
             for(int i = startItem; i < endItem; i++){
                 list.add(mListAPI.get(i));
@@ -247,7 +268,40 @@ public class ProductFragment extends Fragment {
         return list;
     }
 
+    //chay 1 lần
+    @Override
+    public void onStart() {
+        Log.d("BBB","onStart");
+        super.onStart();
 
+
+
+//        Log.d("BBB",string + ": Từ Product Fragment ");
+
+
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        Log.d("BBB","onViewCreated");
+    }
+    //gọi mỗi khi mở sang tab product
+    @Override
+    public void onResume() {
+        super.onResume();
+        String string = mainActivity.mProductFragment.getArguments().getString("Send_fragment");
+        textView.setText(string);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        String string = mainActivity.mProductFragment.getArguments().getString("Send_fragment");
+        textView.setText(string);
+    }
+    
 
 
 }

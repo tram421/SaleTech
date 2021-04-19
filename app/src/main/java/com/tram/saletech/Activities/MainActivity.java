@@ -10,35 +10,106 @@
 package com.tram.saletech.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager.widget.ViewPager;
 
+import android.app.PendingIntent;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
+import android.view.View;
+import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
-import com.tram.saletech.API.ResultAPI;
+import com.tram.saletech.API.Product;
+import com.tram.saletech.Fragment.HomeFragment;
+import com.tram.saletech.Fragment.ProductFragment;
+import com.tram.saletech.Interface.SendData;
+import com.tram.saletech.Navigation.ViewPagerAdapter;
 import com.tram.saletech.R;
-import com.tram.saletech.navigation.Navigation;
+import com.tram.saletech.Navigation.Navigation;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements SendData{
     ViewPager mViewPager;
     BottomNavigationView bottomNavigationView;
     Navigation mNavigation = new Navigation();
+    public ProductFragment mProductFragment = new ProductFragment();
+    public HomeFragment mHomeFragment = new HomeFragment();
+    private String send;
+    private String get;
+    String SearchData_from_searchForm;
+
+
+    public void setGet(String get) {
+        this.get = get;
+    }
+
+    public String getSend() {
+        return send;
+    }
+
+    public String getGet() {
+        return get;
+    }
+
+    //    SendData sendData;
+    String mData;
     int mPressBackCount = 0;
+
+//    @Override
+//    public void getSearchInput(String searchString) {
+////        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT );
+////        HomeFragment homeFragment = (HomeFragment) viewPagerAdapter.getItem(0);
+////        homeFragment.getSearchInput(searchString);
+//        Log.d("BBB",searchString);
+//    }
+
+
+   
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         //bottom navigation
         mViewPager = findViewById(R.id.home_viewPager);
         bottomNavigationView = findViewById(R.id.bottomNav_view);
         //setupViewPager();
         mNavigation.setupViewPager(mViewPager, bottomNavigationView, this);
+//        mbtn1 = findViewById(R.id.btn1);
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT );
+        HomeFragment homeFragment = (HomeFragment) viewPagerAdapter.getItem(0);
+
+//        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+
+//        mHomeFragment = sendDatatoFragment();
+//        mProductFragment = sendDatatoFragment();
+
+
+
 
 
     }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     @Override
     public void onBackPressed() {
@@ -51,4 +122,41 @@ public class MainActivity extends AppCompatActivity {
             super.onBackPressed();
         }
     }
+
+    // Hàm trong interface để lấy dữ liệu từ Homefragment
+    @Override
+    public void send_from_HomeFragment(String data) {  
+        this.SearchData_from_searchForm = data;
+//        sendDatatoFragment();
+//        Log.d("BBB",SearchData_from_searchForm);
+        ProductFragment productFragment = new ProductFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("Send_fragment", data);
+        productFragment.setArguments(bundle);
+        mProductFragment = productFragment;
+        //chuyển tab
+        if(data != null)
+        mNavigation.getmViewPager().setCurrentItem(1);
+
+        
+    }
+    public ProductFragment sendDatatoFragment(){
+        ProductFragment productFragment = new ProductFragment();
+        Bundle bundle = new Bundle();
+        bundle.putString("Send_fragment", "this.SearchData_from_searchForm");
+        productFragment.setArguments(bundle);
+        return productFragment;
+    }
+
+//    @Override
+//    public void sendString(String string) {
+//        Intent intent = new Intent(MainActivity.this, ProductActivity.class);
+//        intent.putExtra("chuoi",string);
+//        startActivity(intent);
+//
+//    }
+
+
+
+
 }
