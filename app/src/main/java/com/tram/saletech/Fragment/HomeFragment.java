@@ -24,10 +24,9 @@ import com.tram.saletech.R;
 public class HomeFragment extends Fragment{
 
 
-    EditText mInputSearch;
-    ImageView mIconSearch;
+
     MainActivity mainActivity;
-    private  SendData iSendData;
+//    private  SendData iSendData;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -49,8 +48,7 @@ public class HomeFragment extends Fragment{
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-        mInputSearch = view.findViewById(R.id.mysearch);
-        mIconSearch = view.findViewById(R.id.iconSearch);
+
 //       mSearchData = (SearchData) getActivity();
         mainActivity = (MainActivity) getActivity();
         return view;
@@ -71,20 +69,11 @@ public class HomeFragment extends Fragment{
 //        Log.d("BBB","Tu home fragment nhan du lieu tu Main: " + receive_fragment);
 
         super.onStart();
-        mIconSearch.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendDataToActivity();
-            }
-        });
+
 
     }
 
-    public void sendDataToActivity(){
-        iSendData = mainActivity;
-        String string = mInputSearch.getText().toString().trim();
-        iSendData.send_from_HomeFragment(string);
-    }
+
 
 
 }

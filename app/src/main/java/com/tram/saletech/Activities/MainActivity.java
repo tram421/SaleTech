@@ -23,7 +23,9 @@ import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -35,17 +37,17 @@ import com.tram.saletech.Navigation.ViewPagerAdapter;
 import com.tram.saletech.R;
 import com.tram.saletech.Navigation.Navigation;
 
-public class MainActivity extends AppCompatActivity implements SendData{
+public class MainActivity extends AppCompatActivity{
     ViewPager mViewPager;
     BottomNavigationView bottomNavigationView;
     Navigation mNavigation = new Navigation();
+    public EditText mInputSearch;
+    ImageView mIconSearch;
     public ProductFragment mProductFragment = new ProductFragment();
     public HomeFragment mHomeFragment = new HomeFragment();
     private String send;
     private String get;
     String SearchData_from_searchForm;
-
-
     public void setGet(String get) {
         this.get = get;
     }
@@ -69,10 +71,6 @@ public class MainActivity extends AppCompatActivity implements SendData{
 ////        homeFragment.getSearchInput(searchString);
 //        Log.d("BBB",searchString);
 //    }
-
-
-   
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,33 +83,30 @@ public class MainActivity extends AppCompatActivity implements SendData{
 //        mbtn1 = findViewById(R.id.btn1);
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT );
         HomeFragment homeFragment = (HomeFragment) viewPagerAdapter.getItem(0);
-
+        mInputSearch = findViewById(R.id.mysearch);
+        mIconSearch = findViewById(R.id.iconSearch);
 //        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
 //        mHomeFragment = sendDatatoFragment();
 //        mProductFragment = sendDatatoFragment();
+        mIconSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String string = mInputSearch.getText().toString().trim();
+                send_to_ProductFragment(string);
 
+            }
+        });
 
-
-
+//        public void sendDataToActivity()
+//    {
+////            iSendData = mainActivity;
+//            String string = mInputSearch.getText().toString().trim();
+////            iSendData.send_from_HomeFragment(string);
+//        }
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    @Override
     public void onBackPressed() {
         mPressBackCount++;
         if(mPressBackCount<2){
@@ -124,9 +119,9 @@ public class MainActivity extends AppCompatActivity implements SendData{
     }
 
     // Hàm trong interface để lấy dữ liệu từ Homefragment
-    @Override
-    public void send_from_HomeFragment(String data) {  
-        this.SearchData_from_searchForm = data;
+//    @Override
+    public void send_to_ProductFragment(String data) {
+//        this.SearchData_from_searchForm = data;
 //        sendDatatoFragment();
 //        Log.d("BBB",SearchData_from_searchForm);
         ProductFragment productFragment = new ProductFragment();
@@ -136,11 +131,16 @@ public class MainActivity extends AppCompatActivity implements SendData{
         mProductFragment = productFragment;
         //chuyển tab
         if(data != null)
-        mNavigation.getmViewPager().setCurrentItem(1);
+            if (mNavigation.getmViewPager().getCurrentItem() != 1) {
+                mNavigation.getmViewPager().setCurrentItem(1);
+            } else {
+                mNavigation.getmViewPager().setCurrentItem(0);
+                mNavigation.getmViewPager().setCurrentItem(1);
+            }
 
-        
     }
     public ProductFragment sendDatatoFragment(){
+
         ProductFragment productFragment = new ProductFragment();
         Bundle bundle = new Bundle();
         bundle.putString("Send_fragment", "this.SearchData_from_searchForm");
@@ -155,8 +155,4 @@ public class MainActivity extends AppCompatActivity implements SendData{
 //        startActivity(intent);
 //
 //    }
-
-
-
-
 }

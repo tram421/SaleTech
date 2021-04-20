@@ -73,22 +73,26 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         if(holder.getItemViewType() == TYPE_ITEM){
             Product product = mListProduct.get(position);
             ProductViewHolder productViewHolder = (ProductViewHolder) holder;
-                    int price = Integer.parseInt(product.getPrice());
-                    int sale = Integer.parseInt(product.getSale());
-                    float  percent = 100 - ((float)((float)sale/(float)price)*100);
-                    final String imgURL  = "http://maitram.net/" + product.getImage();
-                    new ProductAdapter.LoadImage(productViewHolder.mTvimageProduct).execute(imgURL);
-                    productViewHolder.mTvNameProduct.setText(product.getName());
-                    productViewHolder.mTvsale.setText(String.format("%,d",sale) + "đ");
-                    productViewHolder.mTvprice.setText(Html.fromHtml(
-                            "<del>"
-                            + String.format("%,d", price) + "đ"
-                            + "</del>" ));
-                    if(percent > 0){
-                        productViewHolder.mTvpercentCostSale.setText( "-" + Math.round(percent) + "%" );
-                    } else {
-                        productViewHolder.mTvpercentCostSale.setText("");
-                    }
+            if (product.getName() !=null) {
+                int price = Integer.parseInt(product.getPrice());
+                int sale = Integer.parseInt(product.getSale());
+                float  percent = 100 - ((float)((float)sale/(float)price)*100);
+                final String imgURL  = "http://maitram.net/" + product.getImage();
+                new ProductAdapter.LoadImage(productViewHolder.mTvimageProduct).execute(imgURL);
+                productViewHolder.mTvNameProduct.setText(product.getName());
+                productViewHolder.mTvsale.setText(String.format("%,d",sale) + "đ");
+                productViewHolder.mTvprice.setText(Html.fromHtml(
+                        "<del>"
+                                + String.format("%,d", price) + "đ"
+                                + "</del>" ));
+                if(percent > 0){
+                    productViewHolder.mTvpercentCostSale.setText( "-" + Math.round(percent) + "%" );
+                } else {
+                    productViewHolder.mTvpercentCostSale.setText("");
+                }
+            }
+
+
         }
 
     }
@@ -176,10 +180,8 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         isLoadingAdd = false;
         int position = mListProduct.size() - 1;
         Product product = mListProduct.get(position);
-        if(product != null){
-            mListProduct.remove(position);
-            notifyItemRemoved(position);
-        }
+        mListProduct.remove(position);
+        notifyItemRemoved(position);
     }
 }
 

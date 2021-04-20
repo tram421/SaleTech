@@ -18,34 +18,40 @@ public abstract class PaginationScrollListener extends RecyclerView.OnScrollList
     private GridLayoutManager gridLayoutManager;
     List<Product> list;
     int currentPage;
+    boolean flagLoadmore;
 
-    public PaginationScrollListener(GridLayoutManager gridLayoutManager, List<Product> list, int currentPage) {
+    public PaginationScrollListener(GridLayoutManager gridLayoutManager, List<Product> list, int currentPage, boolean flagLoadmore) {
         this.gridLayoutManager = gridLayoutManager;
         this.list = list;
         this.currentPage = currentPage;
+        this.flagLoadmore = flagLoadmore;
     }
 
     @Override
     public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
         super.onScrolled(recyclerView, dx, dy);
-
+        if(flagLoadmore == true) {
 
 //        int visibleItemCount = recyclerView.getLayoutManager().getChildCount();
-        int visibleItemCount = recyclerView.getAdapter().getItemCount();
+            int visibleItemCount = recyclerView.getAdapter().getItemCount();
 //        int visibleItemCount = listVisible.size();
-        int totalItemCount = list.size();
-        int firstVisible = ((GridLayoutManager)recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
+            int totalItemCount = list.size();
 
-        if(isLoading() || isLastPage()){
-            Log.d("BBB","Không tải trang");
+            int firstVisible = ((GridLayoutManager)recyclerView.getLayoutManager()).findFirstVisibleItemPosition();
 
-            return;
+            if(isLoading() || isLastPage()){
+//            Log.d("BBB","Không tải trang");
+
+                return;
+            }
+            //điều kiện load thêm sản phẩm: vị trí nhìn thấy không phải trên cùng and số item nhìn thấy nhỏ hơn tổng số
+            // and số item đã tải trừ cho vị trí item đang xem có khoảng cách là dưới 5 item
+
+            if ((firstVisible >= 0) && (visibleItemCount-2) < totalItemCount && (visibleItemCount - firstVisible) <= 6) {
+                loadMoreItem();
+            }
         }
-        //điều kiện load thêm sản phẩm: vị trí nhìn thấy không phải trên cùng and số item nhìn thấy nhỏ hơn tổng số
-        // and số item đã tải trừ cho vị trí item đang xem có khoảng cách là dưới 5 item
-        if ((firstVisible >= 0) && visibleItemCount < totalItemCount && (visibleItemCount - firstVisible) <= 5) {
-            loadMoreItem();
-        }
+
 
     }
 
