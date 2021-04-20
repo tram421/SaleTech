@@ -14,7 +14,6 @@
         android:layout_height="wrap_content"
         android:background="@color/color_main"
         android:padding="10dp">
-
         <EditText
             android:hint="Tìm kiếm sản phẩm..."
             android:id="@+id/mysearch"
@@ -25,6 +24,15 @@
             app:layout_constraintLeft_toLeftOf="parent"
             app:layout_constraintRight_toLeftOf="@+id/iconSearch"
             app:layout_constraintTop_toTopOf="parent" />
+        <ImageView
+            android:id="@+id/clearSearch"
+            android:layout_marginRight="10dp"
+            android:src="@drawable/ic_clear_24"
+            app:layout_constraintBottom_toBottomOf="@+id/mysearch"
+            app:layout_constraintTop_toTopOf="@+id/mysearch"
+            app:layout_constraintRight_toRightOf="@+id/mysearch"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"/>
 
         <ImageView
             android:id="@+id/iconSearch"

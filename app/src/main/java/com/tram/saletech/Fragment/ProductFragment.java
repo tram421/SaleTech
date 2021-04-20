@@ -55,7 +55,7 @@ public class ProductFragment extends Fragment {
 
     //    ReceiveData receiveData;
     ProductAdapter mAdapter;
-    private boolean isLoading;
+    private boolean isLoading = false;
     private boolean isLastpage = false;
     private int currentPage = 1;
     private int itemEachPage = 6;
@@ -151,11 +151,33 @@ public class ProductFragment extends Fragment {
 
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2);
         mRecyclerView.setLayoutManager(layoutManager);
-        mAdapter = new ProductAdapter(mArr);
-        mRecyclerView.setAdapter(mAdapter);
         setFirstData();
 
-        Log.d("BBB","Vao loadMoreItonViewCreatedem: " + this.flagLoadmore);
+        mAdapter = new ProductAdapter(mArr);
+        mRecyclerView.setAdapter(mAdapter);
+
+
+//        mRecyclerView.addOnScrollListener(new PaginationScrollListener(layoutManager, mListAPI, currentPage, flagLoadmore) {
+//            @Override
+//            public void loadMoreItem() {
+//                isLoading = true;
+//                currentPage += 1;
+//                //Độ trễ để đủ thời gian get dữ liệu về từ API
+//                loadNextPage();
+//            }
+//            @Override
+//            public boolean isLoading() {
+//                return isLoading;
+//            }
+//            @Override
+//            public boolean isLastPage() {
+//                if(currentPage >= totalPage){
+//                    mAdapter.removeFooterLoading();
+//                }
+//                return isLastpage;
+//            }
+//        });
+
 //        Log.d("BBB","Vao loadMoreItonViewCreatedem: " + this.isLastpage);
     }
 
@@ -173,6 +195,9 @@ public class ProductFragment extends Fragment {
 //        mSearch = null;
         mSearch = "";
         if(isEmpty(mainActivity.mInputSearch.getText())){
+            //tra ve tong so trang
+            totalPage = (int)Math.ceil((double)mListAPI.size()/(double)itemEachPage);
+            mSearchContent.setText("");
             currentPage = 1;
             flagLoadmore = true;
 //            mSearch = null;
@@ -213,7 +238,6 @@ public class ProductFragment extends Fragment {
                     mSearchContent.setText("Kết quả tìm kiểm của: " + mSearch);
                     flagLoadmore = false;
                     loadData(mSearch);
-
                 }
             }
         }
@@ -224,6 +248,7 @@ public class ProductFragment extends Fragment {
 //        Log.d("BBB",mainActivity.mInputSearch.getText().toString() + " : mInputSearch");
     }
     private void loadData(String search){
+        mAdapter.removeFooterLoading();
         List<Product> list =  new ArrayList<>();
             for(int i = 0; i < mListAPI.size(); i++){
                 Pattern pattern = Pattern.compile(search, Pattern.CASE_INSENSITIVE);
@@ -235,8 +260,10 @@ public class ProductFragment extends Fragment {
 //                    Log.d("BBB",mListAPI.get(i).getName() + "");
                 }
             }
+        totalPage = (int)Math.ceil((double)list.size()/(double)itemEachPage);
         mArr = list;
         mAdapter.setData(mArr);
+
     }
     private void setFirstData(){
 
@@ -244,16 +271,19 @@ public class ProductFragment extends Fragment {
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
-
                 mArr = getListProduct(currentPage);
                 mAdapter.setData(mArr);
-                if(currentPage <= totalPage){
-                    mAdapter.addFooterLoading();
+                if (currentPage <= totalPage) {
+                    if(currentPage != totalPage) {
+                        mAdapter.addFooterLoading();
+                    }
                 } else {
                     isLastpage = true;
+                    mAdapter.removeFooterLoading();
                 }
             }
         },700);
+
     }
     private  List<Product> getListProduct(int currentPage){
 
@@ -282,12 +312,13 @@ public class ProductFragment extends Fragment {
             mAdapter.removeFooterLoading();
             mArr.addAll(list);
             mAdapter.notifyDataSetChanged();
+            if(currentPage != totalPage)mAdapter.addFooterLoading();
 
-            mAdapter.addFooterLoading();
 
         } else {
             Log.d("BBB", "Quá số trang");
             isLastpage = true;
+            mAdapter.removeFooterLoading();
         }
     }
 

@@ -37,6 +37,8 @@ import com.tram.saletech.Navigation.ViewPagerAdapter;
 import com.tram.saletech.R;
 import com.tram.saletech.Navigation.Navigation;
 
+import static android.text.TextUtils.isEmpty;
+
 public class MainActivity extends AppCompatActivity{
     ViewPager mViewPager;
     BottomNavigationView bottomNavigationView;
@@ -63,6 +65,7 @@ public class MainActivity extends AppCompatActivity{
     //    SendData sendData;
     String mData;
     int mPressBackCount = 0;
+    ImageView mClearSearch;
 
 //    @Override
 //    public void getSearchInput(String searchString) {
@@ -85,6 +88,7 @@ public class MainActivity extends AppCompatActivity{
         HomeFragment homeFragment = (HomeFragment) viewPagerAdapter.getItem(0);
         mInputSearch = findViewById(R.id.mysearch);
         mIconSearch = findViewById(R.id.iconSearch);
+        mClearSearch = findViewById(R.id.clearSearch);
 //        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
 //        mHomeFragment = sendDatatoFragment();
@@ -95,6 +99,15 @@ public class MainActivity extends AppCompatActivity{
                 String string = mInputSearch.getText().toString().trim();
                 send_to_ProductFragment(string);
 
+            }
+        });
+        //xoa du lieu search
+        mClearSearch.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String string = "";
+                send_to_ProductFragment(string);
+                mInputSearch.setText("");
             }
         });
 
@@ -130,7 +143,7 @@ public class MainActivity extends AppCompatActivity{
         productFragment.setArguments(bundle);
         mProductFragment = productFragment;
         //chuyển tab
-        if(data != null)
+        if(data != null && isEmpty(data) == false)
             if (mNavigation.getmViewPager().getCurrentItem() != 1) {
                 mNavigation.getmViewPager().setCurrentItem(1);
             } else {

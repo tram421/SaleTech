@@ -177,11 +177,21 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         mListProduct.add(new Product());
     }
     public void removeFooterLoading(){
+
         isLoadingAdd = false;
         int position = mListProduct.size() - 1;
-        Product product = mListProduct.get(position);
-        mListProduct.remove(position);
-        notifyItemRemoved(position);
+//        Log.d("BBB","xóa 1 phần tử: " + mListProduct.get(position).getId());
+        if(mListProduct.get(position).getId() == null){
+            Product product = mListProduct.get(position);
+            mListProduct.remove(position);
+            notifyItemRemoved(position);
+        }
+
+    }
+    public void removeFooterLoadingWithParam(List<Product> list, int position){
+//            Product product = mListProduct.get(position);
+            list.remove(position);
+            notifyItemRemoved(position);
     }
 }
 
