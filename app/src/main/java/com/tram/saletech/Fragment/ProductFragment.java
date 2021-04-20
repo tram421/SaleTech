@@ -45,7 +45,7 @@ import static android.text.TextUtils.isEmpty;
 public class ProductFragment extends Fragment {
     RecyclerView mRecyclerView;
     List<Product> mArr = new ArrayList<>();
-    List<Product> mListAPI;
+    public static List<Product> mListAPI;
     TextView mSearchContent;
     MainActivity mainActivity;
     public String mSearch;

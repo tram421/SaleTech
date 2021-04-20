@@ -152,6 +152,7 @@ public class MainActivity extends AppCompatActivity{
             }
 
     }
+
     public ProductFragment sendDatatoFragment(){
 
         ProductFragment productFragment = new ProductFragment();
@@ -168,4 +169,5 @@ public class MainActivity extends AppCompatActivity{
 //        startActivity(intent);
 //
 //    }
+
 }

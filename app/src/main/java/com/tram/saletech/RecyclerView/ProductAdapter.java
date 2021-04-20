@@ -12,6 +12,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.tram.saletech.API.LoadImage;
 import com.tram.saletech.API.Product;
 import com.tram.saletech.Fragment.ProductFragment;
 import com.tram.saletech.R;
@@ -78,7 +79,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 int sale = Integer.parseInt(product.getSale());
                 float  percent = 100 - ((float)((float)sale/(float)price)*100);
                 final String imgURL  = "http://maitram.net/" + product.getImage();
-                new ProductAdapter.LoadImage(productViewHolder.mTvimageProduct).execute(imgURL);
+                new LoadImage(productViewHolder.mTvimageProduct).execute(imgURL);
                 productViewHolder.mTvNameProduct.setText(product.getName());
                 productViewHolder.mTvsale.setText(String.format("%,d",sale) + "đ");
                 productViewHolder.mTvprice.setText(Html.fromHtml(
@@ -97,28 +98,6 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
 
     }
 
-//    @Override
-//    public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
-//        Product product = mArrProduct.get(position);
-//        int price = Integer.parseInt(product.getPrice());
-//        int sale = Integer.parseInt(product.getSale());
-//        float  percent = 100 - ((float)((float)sale/(float)price)*100);
-//        final String imgURL  = "http://maitram.net/" + product.getImage();
-//        new ProductAdapter.LoadImage(holder.mTvimageProduct).execute(imgURL);
-//        holder.mTvNameProduct.setText(product.getName());
-//        holder.mTvsale.setText(String.format("%,d",sale) + "đ");
-////        holder.mTvprice.setText(product.getPrice());
-//        holder.mTvprice.setText(Html.fromHtml(
-//                "<del>"
-//                + String.format("%,d", price) + "đ"
-//                + "</del>" ));
-//        if(percent > 0){
-//            holder.mTvpercentCostSale.setText( "-" + Math.round(percent) + "%" );
-//        } else {
-//            holder.mTvpercentCostSale.setText("");
-//        }
-//
-//    }
 
     @Override
     public int getItemCount() {
@@ -149,29 +128,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             progressBar = itemView.findViewById(R.id.progress_bar);
         }
     }
-    //Lấy ảnh từ internet về
-    public class LoadImage extends AsyncTask<String, Void, Bitmap> {
-        ImageView bmImage;
 
-        public LoadImage(ImageView bmImage) {
-            this.bmImage = bmImage;
-        }
-        protected Bitmap doInBackground(String... urls) {
-            String urlOfImage = urls[0];
-            Bitmap mIcon11 = null;
-            try {
-                InputStream in = new java.net.URL(urlOfImage).openStream();
-                mIcon11 = BitmapFactory.decodeStream(in);
-            } catch (Exception e) {
-                Log.e("Error", e.getMessage());
-                e.printStackTrace();
-            }
-            return mIcon11;
-        }
-        protected void onPostExecute(Bitmap result) {
-            bmImage.setImageBitmap(result);
-        }
-    }
     public void addFooterLoading(){
         isLoadingAdd = true;
         mListProduct.add(new Product());
@@ -181,11 +138,16 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
         isLoadingAdd = false;
         int position = mListProduct.size() - 1;
 //        Log.d("BBB","xóa 1 phần tử: " + mListProduct.get(position).getId());
-        if(mListProduct.get(position).getId() == null){
-            Product product = mListProduct.get(position);
-            mListProduct.remove(position);
-            notifyItemRemoved(position);
+        try{
+            if(mListProduct.get(position).getId() == null){
+                Product product = mListProduct.get(position);
+                mListProduct.remove(position);
+                notifyItemRemoved(position);
+            }
+        }catch (Exception e){
+            Log.d("BBB",e.getMessage() + " |-------|  trong: ProductAdapter: removeFooterLoading(): Có thể not internet ko get đc API");
         }
+
 
     }
     public void removeFooterLoadingWithParam(List<Product> list, int position){

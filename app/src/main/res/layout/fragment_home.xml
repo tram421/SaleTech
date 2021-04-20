@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context=".Fragment.HomeFragment">
+    tools:context=".Fragment.HomeFragment"
+    >
 
     <ScrollView
         android:layout_width="match_parent"
@@ -14,7 +15,135 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            android:padding="5dp">
+<!-- slide-->
+            <ImageSwitcher
+                android:id="@+id/imageSwitcher"
+                android:layout_width="match_parent"
+                android:layout_height="250dp"/>
+<!--relative 1-->
+            <LinearLayout
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/color_main_sub1"
+                android:padding="5dp">
+                <TextView
+                    android:background="@color/color_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="5dp"
+                    android:text="SẢN PHẨM HOT"
+                    android:textColor="@color/color_main"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:id="@+id/ll"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/listHot"
+                            android:layout_width="wrap_content"
+                            android:layout_height="100dp"
+                            android:orientation="horizontal"
+                            android:scrollbars="horizontal"
+                            tools:listitem="@layout/product_item" />
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
+            </LinearLayout>
+<!--Recyclerview2-->
+            <LinearLayout
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/color_main_sub1"
+                android:padding="5dp">
+                <TextView
+                    android:background="@color/color_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="5dp"
+                    android:text="SẢN PHẨM MỚI"
+                    android:textColor="@color/color_main"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/listNew"
+                            android:layout_width="wrap_content"
+                            android:layout_height="100dp"
+                            android:orientation="horizontal"
+                            android:scrollbars="horizontal"
+                            tools:listitem="@layout/product_item" />
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
+            </LinearLayout>
+<!--Recyclerview2-->
+            <LinearLayout
+                android:layout_marginTop="15dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@color/color_main_sub1"
+                android:padding="5dp">
+                <TextView
+                    android:background="@color/color_title"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingHorizontal="10dp"
+                    android:paddingVertical="5dp"
+                    android:text="GIẢM GIÁ SỐC"
+                    android:textColor="@color/color_main"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+                <HorizontalScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+                        <androidx.recyclerview.widget.RecyclerView
+                            android:id="@+id/listSale"
+                            android:layout_width="wrap_content"
+                            android:layout_height="100dp"
+                            android:orientation="horizontal"
+                            android:scrollbars="horizontal"
+                            tools:listitem="@layout/product_item" />
+
+                    </LinearLayout>
+
+                </HorizontalScrollView>
+            </LinearLayout>
+
 
 
         </LinearLayout>
