@@ -15,4 +15,37 @@
 
     <string name="hello_first_fragment">Hello first fragment</string>
     <string name="hello_second_fragment">Hello second fragment. Arg: %1$s</string>
+
+
+
+    <string name="hello">
+        <![CDATA[
+        <html>
+         <head></head>
+         <body>
+              <h3>TRUNG TÂM BÁCH HÓA ĐIỆN MÁY MEKOLINK</h3>
+              <h4 class="indam">🏙 Chi nhánh Cần Thơ</h4>
+              <h6> 112/70 Nguyễn Thị Minh Khai. Phường An Lạc. Quận Ninh Kiều. TP Cần Thơ</h6>
+			  <h4 class="indam">🏙 Chi nhánh Hậu Giang</h5>
+			    <h6>46 Lô C4. KDC Thiên Lộc. Châu Thành A. Tỉnh Hậu Giang</h4>
+			    <h4>
+						<img src="http://mekolink.com/wp-content/themes/mekolink/img/icon-phone.png" alt="icon-phone">
+						<img src="http://mekolink.com/wp-content/themes/mekolink/img/icon-zalo.png" alt="icon-zalo">
+						<img src="http://mekolink.com/wp-content/themes/mekolink/img/icon-viber.png" alt="icon-viber">
+						: 0896653653 (CSKH)
+					</h4>
+					<h4>
+						<img src="http://mekolink.com/wp-content/themes/mekolink/img/icon-facebook.png" alt="icon-fb">
+						<a href="https//facebook.com/mekolink">https//facebook.com/mekolink</a></h4>
+         </body>
+        </html>
+        ]]>
+</string>
+
+
+
+    <string name="username">Tên đăng nhập</string>
+    <string name="password">Mật khẩu</string>
+    <string name="login">Đăng nhập</string>
+    <string name="signup">Đăng ký</string>
 </resources>

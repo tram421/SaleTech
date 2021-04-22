@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
+import android.webkit.WebView;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -96,11 +97,12 @@ public class HomeFragment extends Fragment{
         mBanner.setOutAnimation(out);
         mBanner.setInAnimation(in);
 
-        CountDownTimer countDownTimer = new CountDownTimer(1700 , 1500) {
+        mBanner.setImageResource(R.drawable.banner_sample);
+        CountDownTimer countDownTimer = new CountDownTimer(2200 , 2000) {
             @Override
             public void onTick(long millisUntilFinished) {
                 mIsStarted = true;
-                if (millisUntilFinished - 1500 > 0){
+                if (millisUntilFinished - 2000 > 0){
                     if (mCount >= mArrImages.length){
                         mCount = 0;
                     }
@@ -115,6 +117,14 @@ public class HomeFragment extends Fragment{
         };
         countDownTimer.start();
 
+        WebView view1 = new WebView(getContext());
+        view1 = view.findViewById(R.id.footerContent);
+        view.setVerticalScrollBarEnabled(false);
+
+        view1.loadData(getString(R.string.hello), "text/html; charset=utf-8", "utf-8");
+//        ((LinearLayout)view.findViewById(R.id.footerContent)).addView(view);
+//
+//        view.loadData(getString(R.string.hello), "text/html; charset=utf-8", "utf-8");
 
         return view;
     }

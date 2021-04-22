@@ -59,24 +59,22 @@ public class ResultAPI {
                 .build();
         this.apiRequest = retrofit.create(APIRequest.class);
     }
-    public void resultUserAPI(){
+    public Call<List<User>> resultUserAPI(){
         init();
 
         //Lấy dữ liệu của user
-        Call<List<User>> callbackUser = this.apiRequest.fetchUser();
+        Call<List<User>> callbackUser = this.apiRequest.creatPost("tram");
 
-        callbackUser.enqueue(new Callback<List<User>>() {
-            @Override
-            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                Log.d("BBB", response.body().toString());
-            }
+        return callbackUser;
 
-            @Override
-            public void onFailure(Call<List<User>> call, Throwable t) {
-                Log.d("BBB", "Lỗi: " + t.getMessage());
-            }
-        });
+    }
+    public Call<String> resultUserAPI1(String user, String pass){
+        init();
 
+        //Lấy dữ liệu của user
+        Call<String> callbackUser = this.apiRequest.creatPost1(user, pass);
+
+        return callbackUser;
 
     }
     public Call<List<Product>> resultProductAPI() {

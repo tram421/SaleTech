@@ -157,28 +157,6 @@ public class ProductFragment extends Fragment {
         mRecyclerView.setAdapter(mAdapter);
 
 
-//        mRecyclerView.addOnScrollListener(new PaginationScrollListener(layoutManager, mListAPI, currentPage, flagLoadmore) {
-//            @Override
-//            public void loadMoreItem() {
-//                isLoading = true;
-//                currentPage += 1;
-//                //Độ trễ để đủ thời gian get dữ liệu về từ API
-//                loadNextPage();
-//            }
-//            @Override
-//            public boolean isLoading() {
-//                return isLoading;
-//            }
-//            @Override
-//            public boolean isLastPage() {
-//                if(currentPage >= totalPage){
-//                    mAdapter.removeFooterLoading();
-//                }
-//                return isLastpage;
-//            }
-//        });
-
-//        Log.d("BBB","Vao loadMoreItonViewCreatedem: " + this.isLastpage);
     }
 
     @Override

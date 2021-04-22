@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<shape
+    android:shape="oval"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <size android:width="80dp"
+        android:height="80dp"/>
+    <solid android:color="@color/color_main"/>
+    <corners android:radius="100dp"/>
+    <padding android:bottom="20dp" android:left="20dp" android:right="20dp" android:top="20dp"/>
+    <!--    <stroke android:width="160dp" android:color="@color/black"/>-->
+    <stroke android:width="9dp"
+        android:color="@color/white"
+        android:dashGap="0dp"
+        android:dashWidth="100sp"/>
+    <gradient android:centerColor="@color/color_main"
+                android:endColor="@color/white"  />
+</shape>
+
+

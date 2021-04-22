@@ -1,14 +1,32 @@
 package com.tram.saletech.Fragment;
 
+import android.app.ProgressDialog;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
+import android.text.Html;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
+import com.google.gson.Gson;
+import com.tram.saletech.API.APIRequest;
+import com.tram.saletech.API.ResultAPI;
+import com.tram.saletech.API.User;
+import com.tram.saletech.Activities.MainActivity;
 import com.tram.saletech.R;
+
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -16,6 +34,7 @@ import com.tram.saletech.R;
  * create an instance of this fragment.
  */
 public class UserFragment extends Fragment {
+    TextView mSignUp;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -61,6 +80,41 @@ public class UserFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user, container, false);
+         View view = inflater.inflate(R.layout.fragment_user, container, false);
+            mSignUp = view.findViewById(R.id.signup);
+            String signup = mSignUp.getText().toString();
+            mSignUp.setText((Html.fromHtml(
+                    "<u>"
+                            + signup
+                            + "</u>" )));
+
+        return view;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        ResultAPI resultAPI = new ResultAPI();
+        resultAPI.init();
+        String user = "tram";
+        String pass = "12345";
+
+        resultAPI.resultUserAPI1(user, pass).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+                Log.d("BBB", response.body() + "   |   Trong user");
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+                Log.d("BBB",t.getMessage() + "Trong user");
+
+            }
+        });
+
+
+
+
     }
 }
