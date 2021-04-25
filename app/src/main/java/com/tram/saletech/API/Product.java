@@ -11,7 +11,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 public class Product {
-
         private String id;
         private String name;
         private String image;
@@ -21,12 +20,11 @@ public class Product {
         private String idCategory;
         private String rate;
         private String similar;
-        private String isFeature;
-
+        private int isFeature;
     public Product() {
     }
 
-    public Product(String id, String name, String image, String price, String sale, String description, String idCategory, String rate, String similar, String isFeature) {
+    public Product(String id, String name, String image, String price, String sale, String description, String idCategory, String rate, String similar, int isFeature) {
         this.id = id;
         this.name = name;
         this.image = image;
@@ -111,11 +109,11 @@ public class Product {
         this.similar = similar;
     }
 
-    public String getIsFeature() {
+    public int getIsFeature() {
         return isFeature;
     }
 
-    public void setIsFeature(String isFeature) {
+    public void setIsFeature(int isFeature) {
         this.isFeature = isFeature;
     }
 

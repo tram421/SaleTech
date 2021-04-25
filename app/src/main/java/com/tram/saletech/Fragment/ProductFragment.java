@@ -22,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tram.saletech.API.GetProductFromAPI;
 import com.tram.saletech.API.MyFlag;
 import com.tram.saletech.API.Product;
 import com.tram.saletech.API.ResultAPI;
@@ -115,13 +116,14 @@ public class ProductFragment extends Fragment {
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         //Vừa Attach thread xong là get api về
-        mListAPI = startReadAPI();
+         mListAPI = startReadAPI();
 
-        CountDownTimer countDownTimer = new CountDownTimer(1000,10) {
+
+        CountDownTimer countDownTimer = new CountDownTimer(3000,10) {
             @Override
             public void onTick(long millisUntilFinished) {
                 if(mListAPI.size() >0){
-                    Toast.makeText(context, "Tải dữ liệu xong", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getActivity(), "Tải dữ liệu xong", Toast.LENGTH_SHORT).show();
                 }
             }
             @Override
@@ -129,7 +131,6 @@ public class ProductFragment extends Fragment {
             }
         };
         countDownTimer.start();
-
     }
 
     @Override
@@ -138,7 +139,8 @@ public class ProductFragment extends Fragment {
 
         View v = inflater.inflate(R.layout.fragment_product, container, false);
         mainActivity = (MainActivity) getActivity();
-
+        totalPage = (int)Math.ceil((double)mListAPI.size()/(double)itemEachPage);
+        totalItem = mListAPI.size();
         return v;
     }
 
@@ -162,13 +164,13 @@ public class ProductFragment extends Fragment {
     @Override
     public void onStart() {
         super.onStart();
-
     }
 
     //gọi mỗi khi mở sang tab product
     @Override
     public void onResume() {
         super.onResume();
+
         //gán lại cờ cho resume khi trang được quay lại mà ko có từ khóa search...cho phép loadmore
 //        mSearch = null;
         mSearch = "";
@@ -299,8 +301,6 @@ public class ProductFragment extends Fragment {
             mAdapter.removeFooterLoading();
         }
     }
-
-
     private  List<Product> startReadAPI(){
         //Tạo 1 thread riêng đọc API, Quá trình đọc khá chậm không muốn ảnh hưởng đến main thread
         List<Product> list = new ArrayList<>();
@@ -333,6 +333,8 @@ public class ProductFragment extends Fragment {
         return list;
 
     }
+
+
 
 
 

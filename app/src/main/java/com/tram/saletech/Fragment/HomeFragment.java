@@ -7,6 +7,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.CountDownTimer;
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,6 +30,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ViewSwitcher;
 
+import com.tram.saletech.API.GetProductFromAPI;
 import com.tram.saletech.API.LoadImage;
 import com.tram.saletech.API.Product;
 import com.tram.saletech.Activities.MainActivity;
@@ -36,15 +39,16 @@ import com.tram.saletech.RecyclerView.ProductAdapter;
 
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 
 import static androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL;
 
 
 public class HomeFragment extends Fragment{
-    ProductAdapter mAdapter;
     RecyclerView mListHot, mListNew, mListSale;
-    List<Product> mArr = new ArrayList<>();
+    List<Product> mListProductAPI;
     int eachItemWidth = 430;
     ImageSwitcher mBanner;
     String[] mArrImages = {
@@ -71,6 +75,7 @@ public class HomeFragment extends Fragment{
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        mListProductAPI = new GetProductFromAPI().startReadAPI();
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -79,7 +84,13 @@ public class HomeFragment extends Fragment{
         View view = inflater.inflate(R.layout.fragment_home, container, false);
 
         mainActivity = (MainActivity) getActivity();
-        initRecyclerViews(view);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                initRecyclerViews(view, mListProductAPI);
+            }
+        },1000);
+
         mBanner = view.findViewById(R.id.imageSwitcher);
 
         mBanner.setFactory(new ViewSwitcher.ViewFactory() {
@@ -149,54 +160,78 @@ public class HomeFragment extends Fragment{
 //        String receive_fragment = mainActivity.mHomeFragment.getArguments().getString("Send_fragment");
 //        Log.d("BBB","Tu home fragment nhan du lieu tu Main: " + receive_fragment);
 
+
         super.onStart();
+
     }
 
-    private void initRecyclerViews(View view){
+    private void initRecyclerViews(View view, List<Product> listAPI){
+        ProductAdapter listHotAdapter;
+        ProductAdapter listNewAdapter;
+        ProductAdapter listSaleAdapter;
+        List<Product> listHotArr = new ArrayList<>();
+        List<Product> listNewArr = new ArrayList<>();
+        List<Product> listSaleArr = new ArrayList<>();
 
         mListHot = view.findViewById(R.id.listHot);
         mListNew = view.findViewById(R.id.listNew);
         mListSale = view.findViewById(R.id.listSale);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        LinearLayoutManager layoutManager1 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-        LinearLayoutManager layoutManager2 = new LinearLayoutManager(getContext(), LinearLayoutManager.HORIZONTAL, false);
-//        layoutManager.setOrientation(RecyclerView.HORIZONTAL);
-        mArr = new DataMock().getMock();
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), HORIZONTAL, false);
+        LinearLayoutManager layoutManager1 = new LinearLayoutManager(getContext(), HORIZONTAL, false);
+        LinearLayoutManager layoutManager2 = new LinearLayoutManager(getContext(), HORIZONTAL, false);
 
-//        RelativeLayout.LayoutParams lp = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 500);
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(eachItemWidth * mArr.size(), LinearLayout.LayoutParams.WRAP_CONTENT);
-
+//        FEATURE SẢN PHẨM HOT
+        for (int i = 0; i < listAPI.size(); i++) {
+            if (listAPI.get(i).getIsFeature() == 1) { //lấy những sản phẩm có feature = 1 trong database
+                listHotArr.add(listAPI.get(i));
+            }
+        }
+        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(eachItemWidth * listHotArr.size(), LinearLayout.LayoutParams.WRAP_CONTENT);
         mListHot.setLayoutParams(layoutParams);
         mListHot.setLayoutManager(layoutManager);
+        listHotAdapter = new ProductAdapter(listHotArr);
+        mListHot.setAdapter(listHotAdapter);
+        listHotAdapter.removeFooterLoading();
+        //SẢN PHẨM MỚI
 
-        mListNew.setLayoutParams(layoutParams);
-        mListSale.setLayoutParams(layoutParams);
+        for (int i = listAPI.size()-1; i > (listAPI.size() - 11); i--) {
+            listNewArr.add(listAPI.get(i));
+        }
+        LinearLayout.LayoutParams layoutParams_new = new LinearLayout.LayoutParams(eachItemWidth * listNewArr.size(), LinearLayout.LayoutParams.WRAP_CONTENT);
+        mListNew.setLayoutParams(layoutParams_new);
         mListNew.setLayoutManager(layoutManager1);
+        listNewAdapter = new ProductAdapter(listNewArr);
+        mListNew.setAdapter(listNewAdapter);
+        listNewAdapter.removeFooterLoading();
+
+        //SẢN PHẨM KHUYẾN MÃI
+        listSaleArr = listAPI;
+        List<Product> list = new ArrayList<>();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            listSaleArr.sort(new SaleSorter());
+        }
+        for (int i = listSaleArr.size()-1; i > listSaleArr.size()-11; i--) {
+            list.add(listSaleArr.get(i));
+        }
+        listSaleAdapter = new ProductAdapter(list);
+        mListSale.setLayoutParams(layoutParams_new);
         mListSale.setLayoutManager(layoutManager2);
-
-        mAdapter = new ProductAdapter(mArr);
-        mListHot.setAdapter(mAdapter);
-
-        mListNew.setAdapter(mAdapter);
-        mListSale.setAdapter(mAdapter);
+        mListSale.setAdapter(listSaleAdapter);
+        listSaleAdapter.removeFooterLoading();
     }
-
-
-
-
 
 }
 
 class DataMock{
     public List<Product> getMock(){
         List<Product> listMock = new ArrayList<>();
-        listMock.add(new Product("1","Tên sản phẩm","api/image/tv02.jpg","2000","2000","Tram","Tram","Tram","Tram","Tram"));
-        listMock.add(new Product("2","Tên sản phẩm", "api/image/tv03.jpg","20000","2000","Tram","Tram","Tram","Tram","Tram"));
-        listMock.add(new Product("3","Tên sản phẩm", "api/image/tv04.jpg","20000","2000","Tram","Tram","Tram","Tram","Tram"));
-        listMock.add(new Product("4","Tên sản phẩm","api/image/tv01.jpg","2000","2000","Tram","Tram","Tram","Tram","Tram"));
-        listMock.add(new Product("5","Tên sản phẩm", "api/image/tv02.jpg","20000","2000","Tram","Tram","Tram","Tram","Tram"));
-        listMock.add(new Product("6","Tram5", "api/image/tv01.jpg","20000","2000","Tram","Tram","Tram","Tram","Tram"));
+        listMock.add(new Product("1","Tên sản phẩm","api/image/tv02.jpg","2000","2000","Tram","Tram","Tram","Tram",1));
+        listMock.add(new Product("2","Tên sản phẩm", "api/image/tv03.jpg","20000","2000","Tram","Tram","Tram","Tram",0));
+        listMock.add(new Product("3","Tên sản phẩm", "api/image/tv04.jpg","20000","2000","Tram","Tram","Tram","Tram",0));
+        listMock.add(new Product("4","Tên sản phẩm","api/image/tv01.jpg","2000","2000","Tram","Tram","Tram","Tram",1));
+        listMock.add(new Product("5","Tên sản phẩm", "api/image/tv02.jpg","20000","2000","Tram","Tram","Tram","Tram",1));
+        listMock.add(new Product("6","Tram5", "api/image/tv01.jpg","20000","2000","Tram","Tram","Tram","Tram",0));
 
         return listMock;
     }
@@ -224,5 +259,17 @@ class LoadImage1 extends AsyncTask<String, Void, Bitmap> {
         Drawable drawable =new BitmapDrawable(result);
         bmImageSwitcher.setImageDrawable(drawable);
 
+    }
+}
+class SaleSorter implements Comparator<Product>
+{
+    //sắp xếp theo giá giảm
+    @Override
+    public int compare(Product o1, Product o2) {
+//        return String.valueOf(o1.getId()).compareTo(String.valueOf(o2.getId()));
+        int price1 = Math.round(100 - ((Float.parseFloat(o1.getSale()) / Float.parseFloat(o1.getPrice()))*100));
+        int price2 = Math.round(100 - ((Float.parseFloat(o2.getSale()) / Float.parseFloat(o2.getPrice()))*100));
+
+        return price1 - price2;
     }
 }

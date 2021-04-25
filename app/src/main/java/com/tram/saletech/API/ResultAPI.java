@@ -59,20 +59,20 @@ public class ResultAPI {
                 .build();
         this.apiRequest = retrofit.create(APIRequest.class);
     }
-    public Call<List<User>> resultUserAPI(){
+    public Call<List<User>> resultUserAPI(Integer idUser){
         init();
 
         //Lấy dữ liệu của user
-        Call<List<User>> callbackUser = this.apiRequest.creatPost("tram");
+        Call<List<User>> callbackUser = this.apiRequest.creatPost(idUser);
 
         return callbackUser;
 
     }
-    public Call<String> resultUserAPI1(String user, String pass){
+    public Call<String> resultUserAPI_checkLogin(String user, String pass){
         init();
 
         //Lấy dữ liệu của user
-        Call<String> callbackUser = this.apiRequest.creatPost1(user, pass);
+        Call<String> callbackUser = this.apiRequest.creatPost_checkLogin(user, pass);
 
         return callbackUser;
 

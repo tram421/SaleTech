@@ -15,15 +15,16 @@ public interface APIRequest  {
     Call<List<User>> fetchUser();
     @GET("http://maitram.net/api/product.php")
     Call<List<Product>> fetchProduct();
+
     @FormUrlEncoded
     @POST("http://maitram.net/api/user.php")
     Call<List<User>> creatPost(
-      @Field("name") String name
+      @Field("userid") Integer userid
     );
 
     @FormUrlEncoded
     @POST("http://maitram.net/api/user.php")
-    Call<String> creatPost1(
+    Call<String> creatPost_checkLogin(
             @Field("user") String name,
             @Field("password") String password
     );

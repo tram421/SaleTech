@@ -3,11 +3,13 @@
     <LinearLayout
         xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="150dp"
+        android:background="@drawable/border"
         android:layout_height="wrap_content"
         android:orientation="vertical"
         android:layout_margin="5dp"
         android:layout_marginHorizontal="5dp">
         <ImageView
+            android:padding="10dp"
             android:id="@+id/imageProduct"
             android:src="@drawable/sample_product"
             android:layout_width="150dp"
@@ -57,5 +59,13 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"/>
         </LinearLayout>
+    <Button
+        android:backgroundTint="@color/color_button"
+        android:textColor="@color/white"
+        android:textStyle="bold"
+        android:textSize="12sp"
+        android:text="THÊM VÀO GIỎ HÀNG"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
     </LinearLayout>
 
