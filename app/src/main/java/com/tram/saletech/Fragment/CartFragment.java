@@ -4,6 +4,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -19,7 +20,9 @@ import com.tram.saletech.API.Product;
 import com.tram.saletech.API.ResultAPI;
 import com.tram.saletech.API.User;
 import com.tram.saletech.R;
+import com.tram.saletech.RecyclerView.ProductAdapter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -29,9 +32,14 @@ import java.util.List;
  */
 public class CartFragment extends Fragment {
 
-    int[] mListProductInCart;
+    String mListProductInCart;
     int mIdUser;
     int mcount;
+    Boolean flagWaitCallAPI = false;
+
+    RecyclerView mRecyclerView;
+    List<Product> mArr = new ArrayList<>();
+    ProductAdapter mAdapter;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -81,7 +89,7 @@ public class CartFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
-
+        setRecyclerView();
 //        UserFragment userFragment = new UserFragment();
 //        String m;
 //        m = userFragment.getArguments().getString("mParam1");
@@ -107,8 +115,27 @@ public class CartFragment extends Fragment {
 
 
     }
+    private void setRecyclerView()
+    {
+
+        Thread threadForRecycler = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if(!flagWaitCallAPI) {
+                    try {
+                        Thread.sleep(200);
+                        setRecyclerView();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        });
+        threadForRecycler.start();
+    }
     private void callAPI()
     {
+        flagWaitCallAPI = false;
         Thread threadCallAPI = new Thread(new Runnable() {
             @Override
             public void run() {
@@ -125,26 +152,22 @@ public class CartFragment extends Fragment {
                     resultAPI.resultUserAPI(mIdUser).enqueue(new Callback<List<User>>() {
                         @Override
                         public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                            String m = response.body().get(0).getIdproduct() ;
-                            Log.d("BBB",m);
+                            mListProductInCart = response.body().get(0).getIdproduct() ;
                             String[] getResponse;
                             getResponse = response.body().get(0).getIdproduct().split(",");
                             int i = 0;
-                            mListProductInCart = new int[getResponse.length];
-                            for ( String e : getResponse) {
-                                mListProductInCart[i] = Integer.parseInt(e);
-                                i++;
-                            }
+
                             //gọi lên api để lấy dữ liệu sản phẩm
                             ResultAPI resultAPI_GetProductInCart = new ResultAPI();
                             resultAPI_GetProductInCart.init();
-                            resultAPI_GetProductInCart.resultCartAPI(m).enqueue(new Callback<List<Product>>() {
+                            resultAPI_GetProductInCart.resultCartAPI(mListProductInCart).enqueue(new Callback<List<Product>>() {
                                 @Override
                                 public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
 
                                     for (int j = 0; j < response.body().size(); j++) {
-                                        Log.d("BBB", String.valueOf(response.body().get(j).getId()));  //Lấy id product trong cart
+                                        mArr.add(response.body().get(i));
                                     }
+                                    flagWaitCallAPI = true;
                                 }
 
                                 @Override

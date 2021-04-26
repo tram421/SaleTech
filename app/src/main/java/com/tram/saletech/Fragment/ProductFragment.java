@@ -46,6 +46,7 @@ import static android.text.TextUtils.isEmpty;
 public class ProductFragment extends Fragment {
     RecyclerView mRecyclerView;
     List<Product> mArr = new ArrayList<>();
+    ProductAdapter mAdapter;
     public static List<Product> mListAPI;
     TextView mSearchContent;
     MainActivity mainActivity;
@@ -55,7 +56,7 @@ public class ProductFragment extends Fragment {
 //    }
 
     //    ReceiveData receiveData;
-    ProductAdapter mAdapter;
+
     private boolean isLoading = false;
     private boolean isLastpage = false;
     private int currentPage = 1;

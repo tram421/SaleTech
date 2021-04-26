@@ -166,59 +166,66 @@ public class HomeFragment extends Fragment{
     }
 
     private void initRecyclerViews(View view, List<Product> listAPI){
-        ProductAdapter listHotAdapter;
-        ProductAdapter listNewAdapter;
-        ProductAdapter listSaleAdapter;
-        List<Product> listHotArr = new ArrayList<>();
-        List<Product> listNewArr = new ArrayList<>();
-        List<Product> listSaleArr = new ArrayList<>();
+        Thread threadInitRecyclerInHome = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                ProductAdapter listHotAdapter;
+                ProductAdapter listNewAdapter;
+                ProductAdapter listSaleAdapter;
+                List<Product> listHotArr = new ArrayList<>();
+                List<Product> listNewArr = new ArrayList<>();
+                List<Product> listSaleArr = new ArrayList<>();
 
-        mListHot = view.findViewById(R.id.listHot);
-        mListNew = view.findViewById(R.id.listNew);
-        mListSale = view.findViewById(R.id.listSale);
+                mListHot = view.findViewById(R.id.listHot);
+                mListNew = view.findViewById(R.id.listNew);
+                mListSale = view.findViewById(R.id.listSale);
 
-        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), HORIZONTAL, false);
-        LinearLayoutManager layoutManager1 = new LinearLayoutManager(getContext(), HORIZONTAL, false);
-        LinearLayoutManager layoutManager2 = new LinearLayoutManager(getContext(), HORIZONTAL, false);
+                LinearLayoutManager layoutManager = new LinearLayoutManager(getContext(), HORIZONTAL, false);
+                LinearLayoutManager layoutManager1 = new LinearLayoutManager(getContext(), HORIZONTAL, false);
+                LinearLayoutManager layoutManager2 = new LinearLayoutManager(getContext(), HORIZONTAL, false);
 
 //        FEATURE SẢN PHẨM HOT
-        for (int i = 0; i < listAPI.size(); i++) {
-            if (listAPI.get(i).getIsFeature() == 1) { //lấy những sản phẩm có feature = 1 trong database
-                listHotArr.add(listAPI.get(i));
+                for (int i = 0; i < listAPI.size(); i++) {
+                    if (listAPI.get(i).getIsFeature() == 1) { //lấy những sản phẩm có feature = 1 trong database
+                        listHotArr.add(listAPI.get(i));
+                    }
+                }
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(eachItemWidth * listHotArr.size(), LinearLayout.LayoutParams.WRAP_CONTENT);
+                mListHot.setLayoutParams(layoutParams);
+                mListHot.setLayoutManager(layoutManager);
+                listHotAdapter = new ProductAdapter(listHotArr);
+                mListHot.setAdapter(listHotAdapter);
+                listHotAdapter.removeFooterLoading();
+                //SẢN PHẨM MỚI
+
+                for (int i = listAPI.size()-1; i > (listAPI.size() - 11); i--) {
+                    listNewArr.add(listAPI.get(i));
+                }
+                LinearLayout.LayoutParams layoutParams_new = new LinearLayout.LayoutParams(eachItemWidth * listNewArr.size(), LinearLayout.LayoutParams.WRAP_CONTENT);
+                mListNew.setLayoutParams(layoutParams_new);
+                mListNew.setLayoutManager(layoutManager1);
+                listNewAdapter = new ProductAdapter(listNewArr);
+                mListNew.setAdapter(listNewAdapter);
+                listNewAdapter.removeFooterLoading();
+
+                //SẢN PHẨM KHUYẾN MÃI
+                listSaleArr = listAPI;
+                List<Product> list = new ArrayList<>();
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                    listSaleArr.sort(new SaleSorter());
+                }
+                for (int i = listSaleArr.size()-1; i > listSaleArr.size()-11; i--) {
+                    list.add(listSaleArr.get(i));
+                }
+                listSaleAdapter = new ProductAdapter(list);
+                mListSale.setLayoutParams(layoutParams_new);
+                mListSale.setLayoutManager(layoutManager2);
+                mListSale.setAdapter(listSaleAdapter);
+                listSaleAdapter.removeFooterLoading();
             }
-        }
-        LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(eachItemWidth * listHotArr.size(), LinearLayout.LayoutParams.WRAP_CONTENT);
-        mListHot.setLayoutParams(layoutParams);
-        mListHot.setLayoutManager(layoutManager);
-        listHotAdapter = new ProductAdapter(listHotArr);
-        mListHot.setAdapter(listHotAdapter);
-        listHotAdapter.removeFooterLoading();
-        //SẢN PHẨM MỚI
+        });
+        threadInitRecyclerInHome.start();
 
-        for (int i = listAPI.size()-1; i > (listAPI.size() - 11); i--) {
-            listNewArr.add(listAPI.get(i));
-        }
-        LinearLayout.LayoutParams layoutParams_new = new LinearLayout.LayoutParams(eachItemWidth * listNewArr.size(), LinearLayout.LayoutParams.WRAP_CONTENT);
-        mListNew.setLayoutParams(layoutParams_new);
-        mListNew.setLayoutManager(layoutManager1);
-        listNewAdapter = new ProductAdapter(listNewArr);
-        mListNew.setAdapter(listNewAdapter);
-        listNewAdapter.removeFooterLoading();
-
-        //SẢN PHẨM KHUYẾN MÃI
-        listSaleArr = listAPI;
-        List<Product> list = new ArrayList<>();
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            listSaleArr.sort(new SaleSorter());
-        }
-        for (int i = listSaleArr.size()-1; i > listSaleArr.size()-11; i--) {
-            list.add(listSaleArr.get(i));
-        }
-        listSaleAdapter = new ProductAdapter(list);
-        mListSale.setLayoutParams(layoutParams_new);
-        mListSale.setLayoutManager(layoutManager2);
-        mListSale.setAdapter(listSaleAdapter);
-        listSaleAdapter.removeFooterLoading();
     }
 
 }
