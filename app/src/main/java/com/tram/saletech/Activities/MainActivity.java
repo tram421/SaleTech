@@ -33,6 +33,7 @@ import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.tram.saletech.API.Product;
 import com.tram.saletech.Fragment.HomeFragment;
 import com.tram.saletech.Fragment.ProductFragment;
+import com.tram.saletech.Fragment.UserFragment;
 import com.tram.saletech.Interface.SendData;
 import com.tram.saletech.Navigation.ViewPagerAdapter;
 import com.tram.saletech.R;
@@ -118,6 +119,7 @@ public class MainActivity extends AppCompatActivity{
 //            String string = mInputSearch.getText().toString().trim();
 ////            iSendData.send_from_HomeFragment(string);
 //        }
+
 
     }
 

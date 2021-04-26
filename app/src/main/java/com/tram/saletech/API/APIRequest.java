@@ -28,4 +28,10 @@ public interface APIRequest  {
             @Field("user") String name,
             @Field("password") String password
     );
+
+    @FormUrlEncoded
+    @POST("http://maitram.net/api/cart.php")
+    Call<List<Product>> creatPost_getProductFromCart(
+            @Field("cart") String idProduct
+    );
 }

@@ -53,8 +53,12 @@ public class UserFragment extends Fragment {
     public static final String ID_USER = "idUser";
     String state;
     Integer mUserId;
-    String mFullNameUser, mAdressUser, mPhoneUser;
+    String mFullNameUser;
+    String mAdressUser;
+    String mPhoneUser;
+    String mIdproduct;
     int mIdVoucher, mIdOrder;
+    static CartFragment mCartFragment;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -78,6 +82,7 @@ public class UserFragment extends Fragment {
      * @return A new instance of fragment UserFragment.
      */
     // TODO: Rename and change types and number of parameters
+
     public static UserFragment newInstance(String param1, String param2) {
         UserFragment fragment = new UserFragment();
         Bundle args = new Bundle();
@@ -85,6 +90,14 @@ public class UserFragment extends Fragment {
         args.putString(ARG_PARAM2, param2);
         fragment.setArguments(args);
         return fragment;
+    }
+    public void sendDatatoCartFragment(){
+
+        CartFragment cartFragment = new CartFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("idUser", mUserId);
+        cartFragment.setArguments(bundle);
+        mCartFragment = cartFragment;
     }
 
     @Override
@@ -94,6 +107,7 @@ public class UserFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
+//        sendDatatoCartFragment();
     }
 
     @Override
@@ -171,6 +185,8 @@ public class UserFragment extends Fragment {
         super.onResume();
         loadPreferences();
         loadStateAndUpdateView();
+        loadInfoUser(mUserId);
+        Log.d("BBB","Gọi onresume trong user");
     }
 
     private void savePreferences(String state, Integer userId)
@@ -225,10 +241,11 @@ public class UserFragment extends Fragment {
                 mFullNameUser = response.body().get(0).getName();
                 mAdressUser = response.body().get(0).getAddress();
                 mPhoneUser = response.body().get(0).getPhone();
+                mIdproduct = response.body().get(0).getIdproduct();
 //                mIdVoucher = Integer.parseInt(String.valueOf(response.body().get(0).getIdVoucher()));
 //                mIdOrder = Integer.parseInt(String.valueOf(response.body().get(0).getIdOrder()));
+                sendDatatoCartFragment();
             }
-
             @Override
             public void onFailure(Call<List<User>> call, Throwable t) {
                 Log.d("BBB", "Lỗi " + t.getMessage());

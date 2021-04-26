@@ -163,6 +163,7 @@ public class ProductFragment extends Fragment {
 
     @Override
     public void onStart() {
+
         super.onStart();
     }
 

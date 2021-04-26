@@ -86,5 +86,13 @@ public class ResultAPI {
         return callbackProduct;
 
     }
+    public Call<List<Product>> resultCartAPI(String arrIdProduct) {
+        init();
+//        this.kq = kq;
+        //Lấy dữ liệu của product
+        Call<List<Product>> callbackProduct = this.apiRequest.creatPost_getProductFromCart(arrIdProduct);
 
+        return callbackProduct;
+
+    }
 }

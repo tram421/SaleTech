@@ -7,14 +7,16 @@ public class User {
     private String phone;
     private Long idVoucher;
     private Long idOrder;
+    private String idproduct;
 
-    public User(Long id, String name, String address, String phone, Long idVoucher, Long idOrder) {
+    public User(Long id, String name, String address, String phone, Long idVoucher, Long idOrder, String idproduct) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.phone = phone;
         this.idVoucher = idVoucher;
         this.idOrder = idOrder;
+        this.idproduct = idproduct;
     }
 
     public User() {
@@ -46,6 +48,12 @@ public class User {
 
     public String getPhone() {
         return phone;
+    }
+    public String getIdproduct() {
+        return idproduct;
+    }
+    public void setIdproduct(String idproduct) {
+        this.idproduct = idproduct;
     }
 
     public void setPhone(String phone) {
