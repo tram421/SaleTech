@@ -166,9 +166,7 @@ public class HomeFragment extends Fragment{
     }
 
     private void initRecyclerViews(View view, List<Product> listAPI){
-        Thread threadInitRecyclerInHome = new Thread(new Runnable() {
-            @Override
-            public void run() {
+
                 ProductAdapter listHotAdapter;
                 ProductAdapter listNewAdapter;
                 ProductAdapter listSaleAdapter;
@@ -223,10 +221,7 @@ public class HomeFragment extends Fragment{
                 mListSale.setAdapter(listSaleAdapter);
                 listSaleAdapter.removeFooterLoading();
             }
-        });
-        threadInitRecyclerInHome.start();
 
-    }
 
 }
 

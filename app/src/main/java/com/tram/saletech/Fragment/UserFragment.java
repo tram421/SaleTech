@@ -186,7 +186,6 @@ public class UserFragment extends Fragment {
         loadPreferences();
         loadStateAndUpdateView();
         loadInfoUser(mUserId);
-        Log.d("BBB","Gọi onresume trong user");
     }
 
     private void savePreferences(String state, Integer userId)

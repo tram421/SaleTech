@@ -14,12 +14,20 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.tram.saletech.API.GetCart;
 import com.tram.saletech.API.MyFlag;
 import com.tram.saletech.API.Product;
 import com.tram.saletech.API.ResultAPI;
 import com.tram.saletech.API.User;
+import com.tram.saletech.Interface.OnListenerItem;
 import com.tram.saletech.R;
+import com.tram.saletech.RecyclerView.CartAdapter;
 import com.tram.saletech.RecyclerView.ProductAdapter;
 
 import java.util.ArrayList;
@@ -36,10 +44,12 @@ public class CartFragment extends Fragment {
     int mIdUser;
     int mcount;
     Boolean flagWaitCallAPI = false;
-
+//recycler
     RecyclerView mRecyclerView;
     List<Product> mArr = new ArrayList<>();
-    ProductAdapter mAdapter;
+    CartAdapter mAdapter;
+    GetCart mGetCart;
+
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -73,7 +83,8 @@ public class CartFragment extends Fragment {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
-        mcount=0;
+        mcount = 0;
+//        mArr = Product.getMock();
         callIdUserFromUserFragment();
         callAPI();
         super.onCreate(savedInstanceState);
@@ -89,11 +100,11 @@ public class CartFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
-        setRecyclerView();
+
 //        UserFragment userFragment = new UserFragment();
 //        String m;
 //        m = userFragment.getArguments().getString("mParam1");
-
+   
 
 //        Bundle bundle = this.getArguments();
 
@@ -101,10 +112,50 @@ public class CartFragment extends Fragment {
 //            String myInt = bundle.getString("mParam1", "");
 //            Log.d("BBB",myInt + "Trong cartFragment");
 //        }
-
-
+        mGetCart = GetCart.getInstance();
+        setRecyclerView(view);
         return view;
     }
+    private void setRecyclerView(View view)
+    {
+        if (mArr.size() > 0) {
+            mRecyclerView = view.findViewById(R.id.recyclerViewInCart);
+            mAdapter = new CartAdapter(mArr);
+            mRecyclerView.setAdapter(mAdapter);
+
+            mAdapter.setOnItemClickListener(new OnListenerItem() {
+                @Override
+                public void onClick(int position) {
+//                Toast.makeText(MainActivity.this, mArrNowFoodVns.get(position).getName(), Toast.LENGTH_SHORT).show();
+                    mArr.remove(position); //xoa trong mang
+                    mAdapter.notifyItemRemoved(Integer.parseInt(position + "")); //xóa 1 item
+                    mGetCart.listAllCart = mGetCart.remove(position,mGetCart.listAllCart);
+
+                }
+            });
+
+
+        } else {
+//            Chua get du lieu
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    setRecyclerView(view);
+                }
+            },200);
+        }
+        
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+
+        
+
+    }
+
+
 
     @Override
     public void onStart() {
@@ -112,27 +163,13 @@ public class CartFragment extends Fragment {
         //chờ load xong
 
         super.onStart();
+        
 
+
+        
 
     }
-    private void setRecyclerView()
-    {
 
-        Thread threadForRecycler = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if(!flagWaitCallAPI) {
-                    try {
-                        Thread.sleep(200);
-                        setRecyclerView();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-        threadForRecycler.start();
-    }
     private void callAPI()
     {
         flagWaitCallAPI = false;
@@ -152,22 +189,23 @@ public class CartFragment extends Fragment {
                     resultAPI.resultUserAPI(mIdUser).enqueue(new Callback<List<User>>() {
                         @Override
                         public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                            mListProductInCart = response.body().get(0).getIdproduct() ;
-                            String[] getResponse;
-                            getResponse = response.body().get(0).getIdproduct().split(",");
-                            int i = 0;
+                            //giả sử dữ liệu lấy về có dạng: 1|5,5|3,8|1 hoặc null
 
+                            mListProductInCart = response.body().get(0).getIdproduct() ; //1of5,5of3,8of1
+                            mGetCart.listAllCart = mGetCart.StringToArray(mListProductInCart);
                             //gọi lên api để lấy dữ liệu sản phẩm
                             ResultAPI resultAPI_GetProductInCart = new ResultAPI();
                             resultAPI_GetProductInCart.init();
-                            resultAPI_GetProductInCart.resultCartAPI(mListProductInCart).enqueue(new Callback<List<Product>>() {
+                            resultAPI_GetProductInCart.resultCartAPI(mGetCart.listToStringSendAPI(mListProductInCart))
+                                                        .enqueue(new Callback<List<Product>>() {
                                 @Override
                                 public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
-
+                                    mArr = new ArrayList<>();
                                     for (int j = 0; j < response.body().size(); j++) {
-                                        mArr.add(response.body().get(i));
+                                        mArr.add(response.body().get(j));
                                     }
                                     flagWaitCallAPI = true;
+
                                 }
 
                                 @Override

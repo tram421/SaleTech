@@ -2,6 +2,7 @@ package com.tram.saletech.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -19,14 +20,18 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tram.saletech.API.GetCart;
 import com.tram.saletech.API.GetProductFromAPI;
 import com.tram.saletech.API.MyFlag;
 import com.tram.saletech.API.Product;
 import com.tram.saletech.API.ResultAPI;
 import com.tram.saletech.Activities.MainActivity;
+import com.tram.saletech.Interface.OnListenerItem;
+import com.tram.saletech.Interface.OnListenerToAddCart;
 import com.tram.saletech.R;
 import com.tram.saletech.RecyclerView.PaginationScrollListener;
 import com.tram.saletech.RecyclerView.ProductAdapter;
@@ -51,6 +56,8 @@ public class ProductFragment extends Fragment {
     TextView mSearchContent;
     MainActivity mainActivity;
     public String mSearch;
+    Boolean flagRunFinish = false;
+    OnListenerToAddCart onListenerToAddCart;
 //    public interface ReceiveData{
 //        public void data(String data);
 //    }
@@ -65,8 +72,9 @@ public class ProductFragment extends Fragment {
     private int totalItem = 0;
     private boolean mFlag = false;
     private boolean flagLoadmore = true;
-
-
+    public static final String CART = "cart";
+    public static final String CART_ADDED = "product_in_cart";
+    Button btnDelCart;
 
     MyFlag myFlagAPI = new MyFlag(0);
 
@@ -142,15 +150,10 @@ public class ProductFragment extends Fragment {
         mainActivity = (MainActivity) getActivity();
         totalPage = (int)Math.ceil((double)mListAPI.size()/(double)itemEachPage);
         totalItem = mListAPI.size();
-        return v;
-    }
 
-    @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
 
-        mSearchContent = view.findViewById(R.id.searchContent);
-        mRecyclerView = view.findViewById(R.id.recyclerViewProduct);
+        mSearchContent = v.findViewById(R.id.searchContent);
+        mRecyclerView = v.findViewById(R.id.recyclerViewProduct);
 
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2);
         mRecyclerView.setLayoutManager(layoutManager);
@@ -159,8 +162,28 @@ public class ProductFragment extends Fragment {
         mAdapter = new ProductAdapter(mArr);
         mRecyclerView.setAdapter(mAdapter);
 
+        btnDelCart = v.findViewById(R.id.delCart);
+
+        btnDelCart.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+            }
+        });
+
+        return v;
+    }
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+
+
 
     }
+
+
 
     @Override
     public void onStart() {
@@ -168,9 +191,58 @@ public class ProductFragment extends Fragment {
         super.onStart();
     }
 
+    private void getProductItemToCart()
+    {
+        GetCart mGetCart = GetCart.getInstance();
+
+        if (flagRunFinish) {
+            mAdapter.setOnItemAddToCart(new OnListenerToAddCart() {
+                @Override
+                public void onClick(int postiton) {
+                    boolean flagEnter = false;
+                    int id = Integer.parseInt(mArr.get(postiton).getId());
+
+                    for (int i = 0; i < mGetCart.listAllCart.size(); i++) {
+                        if (id == Integer.parseInt(mGetCart.listAllCart.get(i)[0])) {
+                            int quantity = Integer.parseInt(mGetCart.listAllCart.get(i)[1]) + 1;
+                            String[] st = {
+                                    String.valueOf(id),
+                                   String.valueOf(quantity)
+                            };
+                            mGetCart.listAllCart.add(st);
+                            mGetCart.listAllCart = mGetCart.remove(i, mGetCart.listAllCart);
+                            flagEnter = true; //tìm thấy sản phẩm
+                            break;
+
+                        }
+
+                    }
+                    if (!flagEnter) { //nếu không có sp trùng
+                        String[] st = {
+                                String.valueOf(id),
+                                String.valueOf(1)
+                        };
+                        mGetCart.listAllCart.add(st);
+                    }
+
+                }
+            });
+        } else {
+            new Handler().postDelayed(new Runnable() {
+                @Override
+                public void run() {
+                    getProductItemToCart();
+                }
+            },2000);
+
+        }
+    }
+
     //gọi mỗi khi mở sang tab product
     @Override
     public void onResume() {
+        GetCart mGetCart = GetCart.getInstance();
+
         super.onResume();
 
         //gán lại cờ cho resume khi trang được quay lại mà ko có từ khóa search...cho phép loadmore
@@ -190,6 +262,7 @@ public class ProductFragment extends Fragment {
             mAdapter = new ProductAdapter(mArr);
             mRecyclerView.setAdapter(mAdapter);
             setFirstData();
+            flagRunFinish = true;
             //cuộn trang để load more
             mRecyclerView.addOnScrollListener(new PaginationScrollListener(layoutManager, mListAPI, currentPage, flagLoadmore) {
                 @Override
@@ -224,7 +297,7 @@ public class ProductFragment extends Fragment {
             }
         }
 
-        
+        getProductItemToCart();
 
 
 //        Log.d("BBB",mainActivity.mInputSearch.getText().toString() + " : mInputSearch");
@@ -255,6 +328,7 @@ public class ProductFragment extends Fragment {
             public void run() {
                 mArr = getListProduct(currentPage);
                 mAdapter.setData(mArr);
+
                 if (currentPage <= totalPage) {
                     if(currentPage != totalPage) {
                         mAdapter.addFooterLoading();
@@ -321,6 +395,7 @@ public class ProductFragment extends Fragment {
                         //Sau khi get du lieu ve tu API thi lấy size chia ra so trang
                         totalPage = (int)Math.ceil((double)list.size()/(double)itemEachPage);
                         totalItem = list.size();
+
                     }
 
                     @Override

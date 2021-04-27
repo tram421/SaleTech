@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -15,6 +16,8 @@ import android.widget.TextView;
 import com.tram.saletech.API.LoadImage;
 import com.tram.saletech.API.Product;
 import com.tram.saletech.Fragment.ProductFragment;
+import com.tram.saletech.Interface.OnListenerItem;
+import com.tram.saletech.Interface.OnListenerToAddCart;
 import com.tram.saletech.R;
 
 import java.io.InputStream;
@@ -33,7 +36,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     private static final int TYPE_LOADING = 2;
     List<Product> mListProduct;
     private Boolean isLoadingAdd = true;
-
+    OnListenerToAddCart mOnListenerToAddCart;
     @Override
     public int getItemViewType(int position) {
         if (mListProduct != null && position == (mListProduct.size()-1) && isLoadingAdd == true) {
@@ -111,6 +114,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public class ProductViewHolder extends RecyclerView.ViewHolder{
         ImageView mTvimageProduct;
         TextView mTvNameProduct, mTvsale, mTvprice, mTvpercentCostSale;
+        Button mTvBtnAddToCart;
         public ProductViewHolder(@NonNull View itemView) {
             super(itemView);
             mTvimageProduct = itemView.findViewById(R.id.imageProduct);
@@ -118,6 +122,18 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             mTvsale = itemView.findViewById(R.id.sale);
             mTvprice = itemView.findViewById(R.id.price);
             mTvpercentCostSale = itemView.findViewById(R.id.percentCostSale);
+            mTvBtnAddToCart = itemView.findViewById(R.id.btnAddtoCart);
+
+            mTvBtnAddToCart.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mOnListenerToAddCart != null) {
+                        mOnListenerToAddCart.onClick(getAdapterPosition());
+                    } else {
+                        Log.d("BBB","null");
+                    }
+                }
+            });
 
         }
     }
@@ -148,6 +164,11 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
             Log.d("BBB",e.getMessage() + " |-------|  trong: ProductAdapter: removeFooterLoading(): Có thể not internet ko get đc API");
         }
 
+
+    }
+
+    public void setOnItemAddToCart(OnListenerToAddCart onListenerToAddCart){
+        this.mOnListenerToAddCart = onListenerToAddCart;
 
     }
     public void removeFooterLoadingWithParam(List<Product> list, int position){

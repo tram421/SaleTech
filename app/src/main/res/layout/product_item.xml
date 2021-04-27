@@ -60,6 +60,7 @@
                 android:layout_height="wrap_content"/>
         </LinearLayout>
     <Button
+        android:id="@+id/btnAddtoCart"
         android:backgroundTint="@color/color_button"
         android:textColor="@color/white"
         android:textStyle="bold"

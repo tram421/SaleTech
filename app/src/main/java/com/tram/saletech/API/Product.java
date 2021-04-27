@@ -134,31 +134,39 @@ public class Product {
     }
 
     //dữ liệu giả
-    public static ArrayList<Product> getMock(){
-
-        ArrayList<Product> products = new ArrayList<>();
-        //get API
-        ResultAPI resultAPI = new ResultAPI();
-        resultAPI.init();
-
-        resultAPI.resultProductAPI().enqueue(new Callback<List<Product>>() {
-            @Override
-            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+//    public static ArrayList<Product> getMock(){
+//
+//        ArrayList<Product> products = new ArrayList<>();
+//        //get API
+//        ResultAPI resultAPI = new ResultAPI();
+//        resultAPI.init();
+//
+//        resultAPI.resultProductAPI().enqueue(new Callback<List<Product>>() {
+//            @Override
+//            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+////                products.add(response.body().get(0));
 //                products.add(response.body().get(0));
-                products.add(response.body().get(0));
-
-            }
-            @Override
-            public void onFailure(Call<List<Product>> call, Throwable t) {
-                Log.d("BBB",  "Lỗi: "+ t.getMessage());
-            }
-        });
-//        return ListProduct;
+//
+//            }
+//            @Override
+//            public void onFailure(Call<List<Product>> call, Throwable t) {
+//                Log.d("BBB",  "Lỗi: "+ t.getMessage());
+//            }
+//        });
+////        return ListProduct;
+////    }
+//        return products;
+//
+//
 //    }
-        return products;
+    public static List<Product> getMock(){
+        List<Product> listMock = new ArrayList<>();
+        listMock.add(new Product("1","Tên sản phẩm","api/image/tv02.jpg","2000","2000","description","Category","Rate","similar",1));
+        listMock.add(new Product("2","Tên sản phẩm", "api/image/tv03.jpg","20000","2000","description","Category","Rate","similar",0));
+        listMock.add(new Product("3","Tên sản phẩm", "api/image/tv04.jpg","20000","2000","description","Category","Rate","similar",0));
 
 
+        return listMock;
     }
-
 
 }
