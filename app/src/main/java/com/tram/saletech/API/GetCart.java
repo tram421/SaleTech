@@ -62,7 +62,6 @@ public class GetCart {
                 str += (i == 0) ? arr.get(i)[0] + "of" + arr.get(i)[1] : "," + arr.get(i)[0] + "of" + arr.get(i)[1];
             }
         }
-        Log.d("BBB",str);
         return str;
     }
 

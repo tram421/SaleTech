@@ -34,4 +34,10 @@ public interface APIRequest  {
     Call<List<Product>> creatPost_getProductFromCart(
             @Field("cart") String idProduct
     );
+
+    @FormUrlEncoded
+    @POST("http://maitram.net/api/cart.php")
+    Call<String> inserListCartToUserI(
+            @Field("list") String listIdAndQuantity
+    );
 }

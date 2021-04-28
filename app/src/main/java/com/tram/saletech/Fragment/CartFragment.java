@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tram.saletech.API.AllProduct;
 import com.tram.saletech.API.GetCart;
 import com.tram.saletech.API.MyFlag;
 import com.tram.saletech.API.Product;
@@ -30,6 +31,7 @@ import com.tram.saletech.R;
 import com.tram.saletech.RecyclerView.CartAdapter;
 import com.tram.saletech.RecyclerView.ProductAdapter;
 
+import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -49,7 +51,7 @@ public class CartFragment extends Fragment {
     List<Product> mArr = new ArrayList<>();
     CartAdapter mAdapter;
     GetCart mGetCart;
-
+    AllProduct mAllProduct = AllProduct.getInstance();
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -148,10 +150,49 @@ public class CartFragment extends Fragment {
     }
 
     @Override
+    public void onResume() {
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mArr.clear();
+                //cập nhật cart môi khi chuyển sang thẻ cart
+                for (int i = 0; i < mGetCart.listAllCart.size(); i++) {
+                    for (int j = 0; j < mAllProduct.listAllProduct.size(); j++) {
+                        String id = mAllProduct.listAllProduct.get(j).getId();
+                        if (mGetCart.listAllCart.get(i)[0].equals(mAllProduct.listAllProduct.get(j).getId())) {
+                            mArr.add(mAllProduct.listAllProduct.get(j));
+
+                        }
+                    }
+                }
+                mAdapter = new CartAdapter(mArr);
+                mRecyclerView.setAdapter(mAdapter);
+            }
+        },1000);
+
+        super.onResume();
+    }
+
+    //  Lưu dữ liệu lại lên database khi tắt app
+    @Override
     public void onStop() {
         super.onStop();
 
-        
+        ResultAPI resultAPI = new ResultAPI();
+        resultAPI.insertListCartToUser(mGetCart.arrayToStringInsertAPI(mGetCart.listAllCart)).enqueue(new Callback<String>() {
+            @Override
+            public void onResponse(Call<String> call, Response<String> response) {
+               if(response.body() != "FAIL") {
+               } else {
+                   Log.d("BBB","Lỗi: trong CartFragment: Không gửi được dữ liệu lên server" + mGetCart.arrayToStringInsertAPI(mGetCart.listAllCart));
+               }
+            }
+
+            @Override
+            public void onFailure(Call<String> call, Throwable t) {
+
+            }
+        });
 
     }
 

@@ -95,4 +95,13 @@ public class ResultAPI {
         return callbackProduct;
 
     }
+    public Call<String> insertListCartToUser(String arrIdProduct) {
+        init();
+//        this.kq = kq;
+        //Lấy dữ liệu của product
+        Call<String> callbackProduct = this.apiRequest.inserListCartToUserI(arrIdProduct);
+
+        return callbackProduct;
+
+    }
 }

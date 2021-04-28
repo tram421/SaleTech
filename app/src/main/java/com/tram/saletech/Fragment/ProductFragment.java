@@ -24,6 +24,7 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tram.saletech.API.AllProduct;
 import com.tram.saletech.API.GetCart;
 import com.tram.saletech.API.GetProductFromAPI;
 import com.tram.saletech.API.MyFlag;
@@ -58,6 +59,7 @@ public class ProductFragment extends Fragment {
     public String mSearch;
     Boolean flagRunFinish = false;
     OnListenerToAddCart onListenerToAddCart;
+    AllProduct mAllProduct;
 //    public interface ReceiveData{
 //        public void data(String data);
 //    }
@@ -127,6 +129,7 @@ public class ProductFragment extends Fragment {
         //Vừa Attach thread xong là get api về
          mListAPI = startReadAPI();
 
+        mAllProduct = AllProduct.getInstance();
 
         CountDownTimer countDownTimer = new CountDownTimer(3000,10) {
             @Override
@@ -201,28 +204,30 @@ public class ProductFragment extends Fragment {
                 public void onClick(int postiton) {
                     boolean flagEnter = false;
                     int id = Integer.parseInt(mArr.get(postiton).getId());
+                    if (mGetCart.listAllCart.size() > 0) {
+                        for (int i = 0; i < mGetCart.listAllCart.size(); i++) {
+                            if (id == Integer.parseInt(mGetCart.listAllCart.get(i)[0])) {
+                                int quantity = Integer.parseInt(mGetCart.listAllCart.get(i)[1]) + 1;
+                                String[] st = {
+                                        String.valueOf(id),
+                                        String.valueOf(quantity)
+                                };
+                                mGetCart.listAllCart.add(st);
+                                mGetCart.listAllCart = mGetCart.remove(i, mGetCart.listAllCart);
+                                flagEnter = true; //tìm thấy sản phẩm
+                                break;
 
-                    for (int i = 0; i < mGetCart.listAllCart.size(); i++) {
-                        if (id == Integer.parseInt(mGetCart.listAllCart.get(i)[0])) {
-                            int quantity = Integer.parseInt(mGetCart.listAllCart.get(i)[1]) + 1;
-                            String[] st = {
-                                    String.valueOf(id),
-                                   String.valueOf(quantity)
-                            };
-                            mGetCart.listAllCart.add(st);
-                            mGetCart.listAllCart = mGetCart.remove(i, mGetCart.listAllCart);
-                            flagEnter = true; //tìm thấy sản phẩm
-                            break;
+                            }
 
                         }
-
-                    }
-                    if (!flagEnter) { //nếu không có sp trùng
-                        String[] st = {
-                                String.valueOf(id),
-                                String.valueOf(1)
-                        };
-                        mGetCart.listAllCart.add(st);
+                        if (!flagEnter) { //nếu không có sp trùng
+                            String[] st = {
+                                    String.valueOf(id),
+                                    String.valueOf(1)
+                            };
+                            mGetCart.listAllCart.add(st);
+                        }
+                        Toast.makeText(getActivity(), "Đã thêm vào giỏ hàng ", Toast.LENGTH_SHORT).show();
                     }
 
                 }
@@ -392,6 +397,7 @@ public class ProductFragment extends Fragment {
                         for(int i = 0; i <response.body().size(); i++){
                             list.add(response.body().get(i));
                         }
+                        mAllProduct.listAllProduct = list;
                         //Sau khi get du lieu ve tu API thi lấy size chia ra so trang
                         totalPage = (int)Math.ceil((double)list.size()/(double)itemEachPage);
                         totalItem = list.size();

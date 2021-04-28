@@ -51,7 +51,12 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         int sale = Integer.parseInt(product.getSale());
         holder.mTvsale.setText(String.format("%,d",sale) + "đ");
         int quantity = Integer.parseInt(String.valueOf(holder.mTvEdtquantity.getEditableText()));
+
+            holder.mTvprice.setText(String.valueOf(String.format("%,d",sale * quantity) + "đ"));
+
+
         holder.mTvprice.setText(String.valueOf(String.format("%,d",sale * quantity) + "đ"));
+
         holder.mTvEdtquantity.setText(mGetCart.listAllCart.get(position)[1]);
     }
 
