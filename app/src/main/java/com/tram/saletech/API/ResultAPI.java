@@ -95,11 +95,11 @@ public class ResultAPI {
         return callbackProduct;
 
     }
-    public Call<String> insertListCartToUser(String arrIdProduct) {
+    public Call<String> insertListCartToUser(String arrIdProduct, Integer idUser) {
         init();
 //        this.kq = kq;
         //Lấy dữ liệu của product
-        Call<String> callbackProduct = this.apiRequest.inserListCartToUserI(arrIdProduct);
+        Call<String> callbackProduct = this.apiRequest.inserListCartToUserI(arrIdProduct, idUser);
 
         return callbackProduct;
 

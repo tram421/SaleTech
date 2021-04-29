@@ -2,12 +2,13 @@ package com.tram.saletech.API;
 
 import android.util.Log;
 
+import java.security.Policy;
 import java.util.ArrayList;
 import java.util.List;
 
 public class GetCart {
     private static GetCart instance = null;
-    public String listItemInCart;
+    public List<Product> listProductInCartArr;
     public List<String[]> listAllCart;
     private GetCart()
     {
@@ -65,6 +66,30 @@ public class GetCart {
         return str;
     }
 
+//mGetCart.listProductInCartArr.add(mArr.get(postiton));
+    public List<Product> listProductInCart(List<Product> listAllProduct, List<String[]> listInCart)
+    {
+        List<Product> arr = new ArrayList<>();
+        if(listAllProduct != null && listInCart != null) {
+            if (listAllProduct.size() > 0 && listInCart.size() > 0) {
+                for (int i = 0; i < listInCart.size(); i++) {
+                    for (int j = 0; j < listAllProduct.size(); j++) {
+                        String idInput = listInCart.get(i)[0];
+                        String idList = listAllProduct.get(j).getId();
+                        if (idInput.equals(idList)) {
+                            arr.add(listAllProduct.get(j));
+                        }
 
+                    }
+                }
+            }
+        }
+
+
+
+
+
+        return arr;
+    }
 
 }

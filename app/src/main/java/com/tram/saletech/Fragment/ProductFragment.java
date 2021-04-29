@@ -38,6 +38,7 @@ import com.tram.saletech.RecyclerView.PaginationScrollListener;
 import com.tram.saletech.RecyclerView.ProductAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -76,7 +77,6 @@ public class ProductFragment extends Fragment {
     private boolean flagLoadmore = true;
     public static final String CART = "cart";
     public static final String CART_ADDED = "product_in_cart";
-    Button btnDelCart;
 
     MyFlag myFlagAPI = new MyFlag(0);
 
@@ -165,14 +165,6 @@ public class ProductFragment extends Fragment {
         mAdapter = new ProductAdapter(mArr);
         mRecyclerView.setAdapter(mAdapter);
 
-        btnDelCart = v.findViewById(R.id.delCart);
-
-        btnDelCart.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
 
         return v;
     }
@@ -180,8 +172,7 @@ public class ProductFragment extends Fragment {
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
-
-
+        GetCart mGetCart = GetCart.getInstance();
 
 
     }
@@ -196,42 +187,57 @@ public class ProductFragment extends Fragment {
 
     private void getProductItemToCart()
     {
-        GetCart mGetCart = GetCart.getInstance();
-
         if (flagRunFinish) {
-            mAdapter.setOnItemAddToCart(new OnListenerToAddCart() {
-                @Override
-                public void onClick(int postiton) {
-                    boolean flagEnter = false;
-                    int id = Integer.parseInt(mArr.get(postiton).getId());
-                    if (mGetCart.listAllCart.size() > 0) {
-                        for (int i = 0; i < mGetCart.listAllCart.size(); i++) {
-                            if (id == Integer.parseInt(mGetCart.listAllCart.get(i)[0])) {
-                                int quantity = Integer.parseInt(mGetCart.listAllCart.get(i)[1]) + 1;
-                                String[] st = {
-                                        String.valueOf(id),
-                                        String.valueOf(quantity)
-                                };
-                                mGetCart.listAllCart.add(st);
-                                mGetCart.listAllCart = mGetCart.remove(i, mGetCart.listAllCart);
-                                flagEnter = true; //tìm thấy sản phẩm
-                                break;
+            GetCart mGetCart = GetCart.getInstance();
+                mAdapter.setOnItemAddToCart(new OnListenerToAddCart() {
+                    @Override
+                    public void onClick(int postiton) {
 
-                            }
+                        if(mGetCart.listAllCart != null) {
+                            boolean flagEnter = false;
+                            int id = Integer.parseInt(mArr.get(postiton).getId());
+//                            if (mGetCart.listAllCart.size() > 0) {
+                                for (int i = 0; i < mGetCart.listAllCart.size(); i++) {
+                                    if (id == Integer.parseInt(mGetCart.listAllCart.get(i)[0])) {
 
-                        }
-                        if (!flagEnter) { //nếu không có sp trùng
-                            String[] st = {
-                                    String.valueOf(id),
+                                        int quantity = Integer.parseInt(mGetCart.listAllCart.get(i)[1]) + 1;
+                                        String[] st = {
+                                                String.valueOf(id),
+                                                String.valueOf(quantity)
+                                        };
+                                        mGetCart.listAllCart.add(st);
+                                        mGetCart.listAllCart = mGetCart.remove(i, mGetCart.listAllCart);
+                                        flagEnter = true; //tìm thấy sản phẩm
+                                        break; //tim thay thi ko loop nua
+
+                                    }
+
+                                }
+                                if (!flagEnter) { //nếu không có sp trùng
+                                    String[] st = {
+                                            String.valueOf(id),
+                                            String.valueOf(1)
+                                    };
+                                    mGetCart.listAllCart.add(st);
+                                }
+                                Toast.makeText(getActivity(), "Đã thêm vào giỏ hàng ", Toast.LENGTH_SHORT).show();
+//                            }
+
+                        } else { //nếu chưa có sản phẩm nào trong giỏ hàng
+                            String[] addToCart = {
+                                    String.valueOf(mArr.get(postiton).getId()),
                                     String.valueOf(1)
                             };
-                            mGetCart.listAllCart.add(st);
+                                mGetCart.listAllCart = new ArrayList<>();
+                                mGetCart.listAllCart.add(addToCart);
+
+
                         }
-                        Toast.makeText(getActivity(), "Đã thêm vào giỏ hàng ", Toast.LENGTH_SHORT).show();
                     }
 
-                }
-            });
+                });
+
+
         } else {
             new Handler().postDelayed(new Runnable() {
                 @Override

@@ -52,7 +52,7 @@ public class UserFragment extends Fragment {
     public static final String STATE = "logout";
     public static final String ID_USER = "idUser";
     String state;
-    Integer mUserId;
+    static Integer mUserId;
     String mFullNameUser;
     String mAdressUser;
     String mPhoneUser;

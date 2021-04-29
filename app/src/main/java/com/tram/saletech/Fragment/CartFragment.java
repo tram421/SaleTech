@@ -46,6 +46,7 @@ public class CartFragment extends Fragment {
     int mIdUser;
     int mcount;
     Boolean flagWaitCallAPI = false;
+    TextView mTxtEmptyCart;
 //recycler
     RecyclerView mRecyclerView;
     List<Product> mArr = new ArrayList<>();
@@ -114,16 +115,19 @@ public class CartFragment extends Fragment {
 //            String myInt = bundle.getString("mParam1", "");
 //            Log.d("BBB",myInt + "Trong cartFragment");
 //        }
+        mTxtEmptyCart = view.findViewById(R.id.emtyCart);
         mGetCart = GetCart.getInstance();
+        mRecyclerView = view.findViewById(R.id.recyclerViewInCart);
         setRecyclerView(view);
         return view;
     }
     private void setRecyclerView(View view)
     {
         if (mArr.size() > 0) {
-            mRecyclerView = view.findViewById(R.id.recyclerViewInCart);
+
             mAdapter = new CartAdapter(mArr);
             mRecyclerView.setAdapter(mAdapter);
+            mTxtEmptyCart.setVisibility(View.GONE);
 
             mAdapter.setOnItemClickListener(new OnListenerItem() {
                 @Override
@@ -135,6 +139,7 @@ public class CartFragment extends Fragment {
 
                 }
             });
+
 
 
         } else {
@@ -151,48 +156,84 @@ public class CartFragment extends Fragment {
 
     @Override
     public void onResume() {
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                mArr.clear();
-                //cập nhật cart môi khi chuyển sang thẻ cart
-                for (int i = 0; i < mGetCart.listAllCart.size(); i++) {
-                    for (int j = 0; j < mAllProduct.listAllProduct.size(); j++) {
-                        String id = mAllProduct.listAllProduct.get(j).getId();
-                        if (mGetCart.listAllCart.get(i)[0].equals(mAllProduct.listAllProduct.get(j).getId())) {
-                            mArr.add(mAllProduct.listAllProduct.get(j));
+        super.onResume();
 
-                        }
+        mArr = mGetCart.listProductInCart(mAllProduct.listAllProduct, mGetCart.listAllCart);
+        //cập nhật cart môi khi chuyển sang thẻ cart
+        if (mGetCart.listAllCart != null) {
+            mArr.clear();
+            Log.d("BBB", String.valueOf(mArr.size()));
+            for (int i = 0; i < mGetCart.listAllCart.size(); i++) {
+                for (int j = 0; j < mAllProduct.listAllProduct.size(); j++) {
+                    String id = mAllProduct.listAllProduct.get(j).getId();
+                    if (mGetCart.listAllCart.get(i)[0].equals(id)) {
+                        mArr.add(mAllProduct.listAllProduct.get(j));
+//
                     }
                 }
-                mAdapter = new CartAdapter(mArr);
-                mRecyclerView.setAdapter(mAdapter);
             }
-        },1000);
+            if (mArr.size() > 0) {
+                mTxtEmptyCart.setVisibility(View.GONE);
+            }
+            if (mArr.size() > 1) {
+                updateRecyclerView();
+            }
+        }
 
-        super.onResume();
+
+
     }
 
+
+    private void updateRecyclerView()
+    {
+
+        mArr = mGetCart.listProductInCart(mAllProduct.listAllProduct, mGetCart.listAllCart);
+        if (mArr.size() > 0) {
+            mAdapter = new CartAdapter(mArr);
+            mRecyclerView.setAdapter(mAdapter);
+            mTxtEmptyCart.setVisibility(View.GONE);
+
+            mAdapter.setOnItemClickListener(new OnListenerItem() {
+                @Override
+                public void onClick(int position) {
+//                Toast.makeText(MainActivity.this, mArrNowFoodVns.get(position).getName(), Toast.LENGTH_SHORT).show();
+                    mArr.remove(position); //xoa trong mang
+                    mAdapter.notifyItemRemoved(Integer.parseInt(position + "")); //xóa 1 item
+                    mGetCart.listAllCart = mGetCart.remove(position,mGetCart.listAllCart);
+
+                }
+            });
+        }
+
+    }
     //  Lưu dữ liệu lại lên database khi tắt app
     @Override
     public void onStop() {
         super.onStop();
 
         ResultAPI resultAPI = new ResultAPI();
-        resultAPI.insertListCartToUser(mGetCart.arrayToStringInsertAPI(mGetCart.listAllCart)).enqueue(new Callback<String>() {
-            @Override
-            public void onResponse(Call<String> call, Response<String> response) {
-               if(response.body() != "FAIL") {
-               } else {
-                   Log.d("BBB","Lỗi: trong CartFragment: Không gửi được dữ liệu lên server" + mGetCart.arrayToStringInsertAPI(mGetCart.listAllCart));
-               }
-            }
+//        Log.d("BBB", String.valueOf(mIdUser));
+        if(mGetCart.listAllCart != null) {
+            resultAPI.insertListCartToUser(mGetCart.arrayToStringInsertAPI(mGetCart.listAllCart), mIdUser).enqueue(new Callback<String>() {
+                @Override
+                public void onResponse(Call<String> call, Response<String> response) {
+                    if(response.body().equals("SUCCESSFUL")) {
+                        Log.d("BBB","Trong Cart Fragment: Lưu cart thành công");
+                    } else {
+                        Log.d("BBB","Lỗi: trong CartFragment: Không gửi được dữ liệu lên server" + mGetCart.arrayToStringInsertAPI(mGetCart.listAllCart));
+                    }
+                }
 
-            @Override
-            public void onFailure(Call<String> call, Throwable t) {
+                @Override
+                public void onFailure(Call<String> call, Throwable t) {
 
-            }
-        });
+                }
+            });
+        } else {
+            Log.d("BBB","Không có gì để lưu");
+        }
+
 
     }
 
@@ -231,29 +272,31 @@ public class CartFragment extends Fragment {
                         @Override
                         public void onResponse(Call<List<User>> call, Response<List<User>> response) {
                             //giả sử dữ liệu lấy về có dạng: 1|5,5|3,8|1 hoặc null
+                            if (mGetCart.listAllCart != null) {
+                                mListProductInCart = response.body().get(0).getIdproduct() ; //1of5,5of3,8of1
+                                mGetCart.listAllCart = mGetCart.StringToArray(mListProductInCart);
+                                //gọi lên api để lấy dữ liệu sản phẩm
+                                ResultAPI resultAPI_GetProductInCart = new ResultAPI();
+                                resultAPI_GetProductInCart.init();
+                                resultAPI_GetProductInCart.resultCartAPI(mGetCart.listToStringSendAPI(mListProductInCart))
+                                        .enqueue(new Callback<List<Product>>() {
+                                            @Override
+                                            public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
+                                                mArr = new ArrayList<>();
+                                                for (int j = 0; j < response.body().size(); j++) {
+                                                    mArr.add(response.body().get(j));
+                                                }
+                                                flagWaitCallAPI = true;
 
-                            mListProductInCart = response.body().get(0).getIdproduct() ; //1of5,5of3,8of1
-                            mGetCart.listAllCart = mGetCart.StringToArray(mListProductInCart);
-                            //gọi lên api để lấy dữ liệu sản phẩm
-                            ResultAPI resultAPI_GetProductInCart = new ResultAPI();
-                            resultAPI_GetProductInCart.init();
-                            resultAPI_GetProductInCart.resultCartAPI(mGetCart.listToStringSendAPI(mListProductInCart))
-                                                        .enqueue(new Callback<List<Product>>() {
-                                @Override
-                                public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
-                                    mArr = new ArrayList<>();
-                                    for (int j = 0; j < response.body().size(); j++) {
-                                        mArr.add(response.body().get(j));
-                                    }
-                                    flagWaitCallAPI = true;
+                                            }
 
-                                }
+                                            @Override
+                                            public void onFailure(Call<List<Product>> call, Throwable t) {
+                                                Log.d("BBB", "Lỗi từ cart fragment: " + t.getMessage());
+                                            }
+                                        });
+                            }
 
-                                @Override
-                                public void onFailure(Call<List<Product>> call, Throwable t) {
-                                    Log.d("BBB", "Lỗi từ cart fragment: " + t.getMessage());
-                                }
-                            });
 
                         }
 

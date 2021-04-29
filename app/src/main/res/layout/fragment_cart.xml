@@ -1,10 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    tools:context=".Fragment.CartFragment">
+    tools:context=".Fragment.CartFragment"
+    android:orientation="vertical">
+    <TextView
+        android:layout_marginHorizontal="60dp"
+        android:id="@+id/emtyCart"
+        android:textAllCaps="true"
+        android:textColor="@color/color_title"
+        android:textStyle="bold"
+        android:textAlignment="center"
+        android:layout_marginTop="20dp"
+        android:textSize="20sp"
+        android:layout_gravity="center"
+        android:text="@string/emty_cart"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 
     <androidx.recyclerview.widget.RecyclerView
         app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
@@ -12,4 +27,5 @@
         tools:listitem="@layout/product_item_in_cart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
-</FrameLayout>
+
+</LinearLayout>

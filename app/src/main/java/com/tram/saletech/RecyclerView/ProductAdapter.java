@@ -130,7 +130,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                     if (mOnListenerToAddCart != null) {
                         mOnListenerToAddCart.onClick(getAdapterPosition());
                     } else {
-                        Log.d("BBB","null");
+                        Log.d("BBB","Trong Product Adapter : Chưa gọi được hàm click");
                     }
                 }
             });

@@ -38,6 +38,7 @@ public interface APIRequest  {
     @FormUrlEncoded
     @POST("http://maitram.net/api/cart.php")
     Call<String> inserListCartToUserI(
-            @Field("list") String listIdAndQuantity
+            @Field("list") String listIdAndQuantity,
+            @Field("id") Integer id
     );
 }
