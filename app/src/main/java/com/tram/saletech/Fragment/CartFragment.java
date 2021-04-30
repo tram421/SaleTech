@@ -23,6 +23,7 @@ import android.widget.Toast;
 import com.tram.saletech.API.AllProduct;
 import com.tram.saletech.API.GetCart;
 import com.tram.saletech.API.MyFlag;
+import com.tram.saletech.API.OrderInfo;
 import com.tram.saletech.API.Product;
 import com.tram.saletech.API.ResultAPI;
 import com.tram.saletech.API.User;
@@ -59,6 +60,7 @@ public class CartFragment extends Fragment {
     VoucherInfo mVoucherInfor;
     TextView mTxtVoucher;
     Button mBtnOrder;
+    OrderInfo mOrderInfo;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -128,7 +130,7 @@ public class CartFragment extends Fragment {
         mTxtVoucher = view.findViewById(R.id.txtVoucher);
         mBtnOrder = view.findViewById(R.id.btnOrder);
         mVoucherInfor = VoucherInfo.getInstance();
-
+        mOrderInfo = OrderInfo.getInstance();
         setRecyclerView(view);
         loadInfoUser(mIdUser);
 
@@ -136,25 +138,34 @@ public class CartFragment extends Fragment {
         mBtnOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
-                sendOrder(mIdUser, mGetCart.arrayToStringInsertAPI(mGetCart.listAllCart), mVoucherInfor.idVoucher, getBill());
+                List<Product> list = new ArrayList<>();
+                list = mGetCart.listProductInCart(mAllProduct.listAllProduct, mGetCart.listAllCart);
+                String sendDescription = "" ;
+                for (int i = 0; i < list.size(); i++) {
+                    sendDescription += list.get(i).getName();
+                    sendDescription += "---Số lượng: "+list.get(i).getQuantity() + ",\n";
+                }
+                sendDescription += "...END...";
+                sendOrder(mIdUser, mGetCart.arrayToStringInsertAPI(mGetCart.listAllCart), mVoucherInfor.idVoucher, getBill(),sendDescription);
 
             }
         });
         return view;
     }
     /*
-    listProduct có dạng: 1of2,5of3...
+    listProduct có dạng: 1of2,5of3....
      */
-    private void sendOrder(int userID, String listProduct, int idVoucher, int totalBill)
+    private void sendOrder(int userID, String listProduct, int idVoucher, int totalBill, String description)
     {
         ResultAPI insertToOrderTable = new ResultAPI();
-        insertToOrderTable.insertToOrder(userID, listProduct, idVoucher, totalBill).enqueue(new Callback<String>() {
+        insertToOrderTable.insertToOrder(userID, listProduct, idVoucher, totalBill, description).enqueue(new Callback<String>() {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
+//                mOrderInfo.idOrder[] = Integer.parseInt(response.body());
                 Log.d("BBB",response.body());
-                Toast.makeText(getActivity(), "Đặt hàng thành công", Toast.LENGTH_SHORT).show();
-
+                if(Integer.parseInt(response.body()) > 0) {
+                    Toast.makeText(getActivity(), "Đặt hàng thành công", Toast.LENGTH_SHORT).show();
+                }
             }
 
             @Override

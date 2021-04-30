@@ -1,12 +1,12 @@
 package com.tram.saletech.API;
 
 public class Voucher {
-    private int id;
-    private String name;
-    private String image;
-    private int value;
-    private String description;
-    private String condition;
+    private int id = 0;
+    private String name = "";
+    private String image ="";
+    private int value = 0;
+    private String description = "";
+    private String condition = "";
 
     public Voucher(int id, String name, String image, int value, String description, String condition) {
         this.id = id;

@@ -6,16 +6,14 @@ public class User {
     private String address;
     private String phone;
     private Long idVoucher;
-    private Long idOrder;
     private String idproduct;
 
-    public User(Long id, String name, String address, String phone, Long idVoucher, Long idOrder, String idproduct) {
+    public User(Long id, String name, String address, String phone, Long idVoucher, String idproduct) {
         this.id = id;
         this.name = name;
         this.address = address;
         this.phone = phone;
         this.idVoucher = idVoucher;
-        this.idOrder = idOrder;
         this.idproduct = idproduct;
     }
 
@@ -68,13 +66,6 @@ public class User {
         this.idVoucher = idVoucher;
     }
 
-    public Long getIdOrder() {
-        return idOrder;
-    }
-
-    public void setIdOrder(Long idOrder) {
-        this.idOrder = idOrder;
-    }
 
     @Override
     public String toString() {
@@ -84,7 +75,6 @@ public class User {
                 ", address='" + address + '\'' +
                 ", phone='" + phone + '\'' +
                 ", idVoucher=" + idVoucher +
-                ", idOrder=" + idOrder +
                 '}';
     }
 }

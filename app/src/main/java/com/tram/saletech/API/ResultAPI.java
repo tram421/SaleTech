@@ -16,6 +16,7 @@ import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+import retrofit2.converter.scalars.ScalarsConverterFactory;
 
 public class ResultAPI {
     private APIRequest apiRequest;
@@ -117,11 +118,34 @@ public class ResultAPI {
             @Field("idvoucher") int idvoucher,
             @Field("bill") int totalBill
      */
-    public Call<String> insertToOrder(int userid, String listProduct, int idvoucher, int totalBill) {
-        init();
-        Call<String> callbackVoucher = this.apiRequest.insertToOrderI(userid, listProduct, idvoucher, totalBill);
+    public Call<String> insertToOrder(int userid, String listProduct, int idvoucher, int totalBill, String description) {
 
-        return callbackVoucher;
+        OkHttpClient okHttpClient = new OkHttpClient.Builder()
+                .readTimeout(30, TimeUnit.SECONDS)
+                .connectTimeout(30, TimeUnit.SECONDS)
+                .writeTimeout(30, TimeUnit.SECONDS)
+                .protocols(Arrays.asList(Protocol.HTTP_1_1))
+                .build();
+        Gson gson = new GsonBuilder().setLenient().create();
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl("http://maitram.net/")
+                .client(okHttpClient)
+                .addConverterFactory(ScalarsConverterFactory.create())
+                .build();
+        this.apiRequest = retrofit.create(APIRequest.class);
 
+        Call<String> callbackOrder = this.apiRequest.insertToOrderI(userid, listProduct, idvoucher, totalBill, description);
+        return callbackOrder;
     }
+
+    /*
+           @Field("iduser") int userid
+    */
+    public Call<List<Order>> getOrderOfUser(int userid) {
+        init();
+        Call<List<Order>> callbackVoucher = this.apiRequest.getOrderOfUserI(userid);
+        return callbackVoucher;
+    }
+
+
 }

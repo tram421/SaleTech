@@ -7,6 +7,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.RecyclerView;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -27,15 +28,19 @@ import android.widget.Toast;
 import com.google.gson.Gson;
 import com.tram.saletech.API.APIRequest;
 import com.tram.saletech.API.LoadImage;
+import com.tram.saletech.API.Order;
+import com.tram.saletech.API.OrderInfo;
 import com.tram.saletech.API.ResultAPI;
 import com.tram.saletech.API.User;
 import com.tram.saletech.API.Voucher;
 import com.tram.saletech.API.VoucherInfo;
 import com.tram.saletech.Activities.MainActivity;
 import com.tram.saletech.R;
+import com.tram.saletech.RecyclerView.OrderAdapter;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -65,7 +70,10 @@ public class UserFragment extends Fragment {
     int mIdVoucher, mIdOrder;
     static CartFragment mCartFragment;
     VoucherInfo mVoucherInfo;
-
+    OrderInfo mOrderInfo;
+    RecyclerView mRecyclerViewOrder;
+    private OrderAdapter mAdapter;
+    private List<Order> mArr;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -125,15 +133,22 @@ public class UserFragment extends Fragment {
         //Format
         String signup = mSignUp.getText().toString();
         mSignUp.setText((Html.fromHtml("<u>"+ signup + "</u>" ))); //tạo text underline
-
+        mArr = new ArrayList<>();
+        mAdapter = new OrderAdapter(mArr);
         loadPreferences();
 
         loadInfoUser(mUserId);
 
         mVoucherInfo = VoucherInfo.getInstance();
         mImgVoucher = view.findViewById(R.id.imgVoucher);
+        mOrderInfo = OrderInfo.getInstance();
         getAPIVoucher();
         loadStateAndUpdateView();
+
+
+
+            mAdapter = new OrderAdapter(mArr);
+            mRecyclerViewOrder.setAdapter(mAdapter);
 
 
         return view;
@@ -251,7 +266,6 @@ public class UserFragment extends Fragment {
                     if(mVoucherInfo.imgVoucher != null) {
                         new LoadImage(mImgVoucher).execute(mVoucherInfo.imgVoucher);
                     }
-
                 }
                 if (state.equals("logout")) {
                     mLayoutForm.setVisibility(View.VISIBLE);
@@ -273,27 +287,79 @@ public class UserFragment extends Fragment {
         mLayoutLoginSuccess = view.findViewById(R.id.layoutSignInSuccess);
         mBtnLogout = view.findViewById(R.id.logOut);
         mUserInfo = view.findViewById(R.id.userInfo);
+        mRecyclerViewOrder = view.findViewById(R.id.recyclerViewOrder);
     }
     private void loadInfoUser(Integer idUser)
     {
-        ResultAPI resultAPI = new ResultAPI();
-        resultAPI.init();
-
-        resultAPI.resultUserAPI(idUser).enqueue(new Callback<List<User>>() {
+        mArr = new ArrayList<>();
+        Thread threadAPI = new Thread(new Runnable() {
             @Override
-            public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                mFullNameUser = response.body().get(0).getName();
-                mAdressUser = response.body().get(0).getAddress();
-                mPhoneUser = response.body().get(0).getPhone();
-                mIdproduct = response.body().get(0).getIdproduct();
+            public void run() {
+                ResultAPI resultAPI = new ResultAPI();
+                resultAPI.init();
+
+                resultAPI.resultUserAPI(idUser).enqueue(new Callback<List<User>>() {
+                    @Override
+                    public void onResponse(Call<List<User>> call, Response<List<User>> response) {
+                        mFullNameUser = response.body().get(0).getName();
+                        mAdressUser = response.body().get(0).getAddress();
+                        mPhoneUser = response.body().get(0).getPhone();
+                        mIdproduct = response.body().get(0).getIdproduct();
 //                mIdVoucher = Integer.parseInt(String.valueOf(response.body().get(0).getIdVoucher()));
 //                mIdOrder = Integer.parseInt(String.valueOf(response.body().get(0).getIdOrder()));
-                sendDatatoCartFragment();
+                        sendDatatoCartFragment();
+                    }
+                    @Override
+                    public void onFailure(Call<List<User>> call, Throwable t) {
+                        Log.d("BBB", "Lỗi trong UserFragment" + t.getMessage());
+                    }
+                });
+
+                resultAPI.getOrderOfUser(mUserId).enqueue(new Callback<List<Order>>() {
+                    @Override
+                    public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
+                        if(response.body().size() > 0) {
+                            mOrderInfo.descriptionOrder = new String[response.body().size()];
+                            mOrderInfo.idOrder = new int[response.body().size()];
+                            mOrderInfo.statusOrder = new int[response.body().size()];
+                            for (int i = 0; i < response.body().size(); i++) {
+                                mOrderInfo.descriptionOrder[i] = response.body().get(i).getDescription();
+                                mOrderInfo.idOrder[i] = response.body().get(i).getId();
+                                mOrderInfo.statusOrder[i] = response.body().get(i).getStatus();
+                            }
+                            for (int i = 0; i < mOrderInfo.idOrder.length; i++) {
+                                if(mOrderInfo.statusOrder[i] != 3)
+                                     mArr.add(new Order(mOrderInfo.idOrder[i], mOrderInfo.statusOrder[i], mOrderInfo.descriptionOrder[i])  );
+                            }
+                            try {
+                                Thread.sleep(500);
+                            } catch (InterruptedException e) {
+                                e.printStackTrace();
+                            }
+                            mAdapter = new OrderAdapter(mArr);
+                            mAdapter.notifyDataSetChanged();
+                            mRecyclerViewOrder.setAdapter(mAdapter);
+                            Log.d("BBB","set lai adapter");
+                        }
+
+
+                    }
+
+                    @Override
+                    public void onFailure(Call<List<Order>> call, Throwable t) {
+                        Log.d("BBB", "(444) Lỗi trong UserFragment" + t.getMessage());
+                    }
+                });
             }
-            @Override
-            public void onFailure(Call<List<User>> call, Throwable t) {
-                Log.d("BBB", "Lỗi " + t.getMessage());
-            }
+
+
+
         });
+        threadAPI.start();
+
+
+
     }
+
+
 }

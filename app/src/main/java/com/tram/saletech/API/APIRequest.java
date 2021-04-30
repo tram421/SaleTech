@@ -47,12 +47,23 @@ public interface APIRequest  {
     Call<List<Voucher>> getVoucherAPII(
             @Field("userid") Integer userid
     );
+
     @FormUrlEncoded
     @POST("http://maitram.net/api/order.php")
     Call<String> insertToOrderI(
             @Field("iduser") int userid,
             @Field("list") String listProduct,
             @Field("idvoucher") int idvoucher,
-            @Field("bill") int totalBill
+            @Field("bill") int totalBill,
+            @Field(("description")) String description
     );
+
+    @FormUrlEncoded
+    @POST("http://maitram.net/api/order.php")
+    Call<List<Order>> getOrderOfUserI(
+            @Field("iduser1") int userid
+    );
+
+
+
 }
