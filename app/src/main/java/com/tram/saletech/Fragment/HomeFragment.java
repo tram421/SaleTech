@@ -28,6 +28,7 @@ import android.webkit.WebView;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.tram.saletech.API.GetProductFromAPI;
@@ -88,6 +89,7 @@ public class HomeFragment extends Fragment{
             @Override
             public void run() {
                 initRecyclerViews(view, mListProductAPI);
+
             }
         },1000);
 
@@ -163,6 +165,7 @@ public class HomeFragment extends Fragment{
 
         super.onStart();
 
+
     }
 
     private void initRecyclerViews(View view, List<Product> listAPI){
@@ -220,6 +223,12 @@ public class HomeFragment extends Fragment{
                 mListSale.setLayoutManager(layoutManager2);
                 mListSale.setAdapter(listSaleAdapter);
                 listSaleAdapter.removeFooterLoading();
+
+
+                ProductFragment.getProductItemToCart(true, listHotAdapter, listHotArr);
+                ProductFragment.getProductItemToCart(true, listSaleAdapter, list);
+                ProductFragment.getProductItemToCart(true, listNewAdapter, listNewArr);
+
             }
 
 
@@ -228,12 +237,12 @@ public class HomeFragment extends Fragment{
 class DataMock{
     public List<Product> getMock(){
         List<Product> listMock = new ArrayList<>();
-        listMock.add(new Product("1","Tên sản phẩm","api/image/tv02.jpg","2000","2000","Tram","Tram","Tram","Tram",1));
-        listMock.add(new Product("2","Tên sản phẩm", "api/image/tv03.jpg","20000","2000","Tram","Tram","Tram","Tram",0));
-        listMock.add(new Product("3","Tên sản phẩm", "api/image/tv04.jpg","20000","2000","Tram","Tram","Tram","Tram",0));
-        listMock.add(new Product("4","Tên sản phẩm","api/image/tv01.jpg","2000","2000","Tram","Tram","Tram","Tram",1));
-        listMock.add(new Product("5","Tên sản phẩm", "api/image/tv02.jpg","20000","2000","Tram","Tram","Tram","Tram",1));
-        listMock.add(new Product("6","Tram5", "api/image/tv01.jpg","20000","2000","Tram","Tram","Tram","Tram",0));
+        listMock.add(new Product("1","Tên sản phẩm","api/image/tv02.jpg","2000","2000","Tram","Tram","Tram","Tram",1,0));
+        listMock.add(new Product("2","Tên sản phẩm", "api/image/tv03.jpg","20000","2000","Tram","Tram","Tram","Tram",0,0));
+        listMock.add(new Product("3","Tên sản phẩm", "api/image/tv04.jpg","20000","2000","Tram","Tram","Tram","Tram",0,0));
+        listMock.add(new Product("4","Tên sản phẩm","api/image/tv01.jpg","2000","2000","Tram","Tram","Tram","Tram",1,0));
+        listMock.add(new Product("5","Tên sản phẩm", "api/image/tv02.jpg","20000","2000","Tram","Tram","Tram","Tram",1,0));
+        listMock.add(new Product("6","Tram5", "api/image/tv01.jpg","20000","2000","Tram","Tram","Tram","Tram",0,0));
 
         return listMock;
     }

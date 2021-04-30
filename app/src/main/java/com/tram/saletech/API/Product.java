@@ -21,10 +21,11 @@ public class Product {
         private String rate;
         private String similar;
         private int isFeature;
+        private int quantity;
     public Product() {
     }
 
-    public Product(String id, String name, String image, String price, String sale, String description, String idCategory, String rate, String similar, int isFeature) {
+    public Product(String id, String name, String image, String price, String sale, String description, String idCategory, String rate, String similar, int isFeature, int quantity) {
         this.id = id;
         this.name = name;
         this.image = image;
@@ -35,6 +36,14 @@ public class Product {
         this.rate = rate;
         this.similar = similar;
         this.isFeature = isFeature;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
     }
 
     public String getId() {
@@ -161,9 +170,9 @@ public class Product {
 //    }
     public static List<Product> getMock(){
         List<Product> listMock = new ArrayList<>();
-        listMock.add(new Product("1","Tên sản phẩm","api/image/tv02.jpg","2000","2000","description","Category","Rate","similar",1));
-        listMock.add(new Product("2","Tên sản phẩm", "api/image/tv03.jpg","20000","2000","description","Category","Rate","similar",0));
-        listMock.add(new Product("3","Tên sản phẩm", "api/image/tv04.jpg","20000","2000","description","Category","Rate","similar",0));
+        listMock.add(new Product("1","Tên sản phẩm","api/image/tv02.jpg","2000","2000","description","Category","Rate","similar",1,0));
+        listMock.add(new Product("2","Tên sản phẩm", "api/image/tv03.jpg","20000","2000","description","Category","Rate","similar",0,0));
+        listMock.add(new Product("3","Tên sản phẩm", "api/image/tv04.jpg","20000","2000","description","Category","Rate","similar",0,0));
 
 
         return listMock;

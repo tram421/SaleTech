@@ -7,25 +7,68 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     tools:context=".Fragment.CartFragment"
     android:orientation="vertical">
-    <TextView
-        android:layout_marginHorizontal="60dp"
-        android:id="@+id/emtyCart"
-        android:textAllCaps="true"
-        android:textColor="@color/color_title"
-        android:textStyle="bold"
-        android:textAlignment="center"
-        android:layout_marginTop="20dp"
-        android:textSize="20sp"
-        android:layout_gravity="center"
-        android:text="@string/emty_cart"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <androidx.recyclerview.widget.RecyclerView
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        android:id="@+id/recyclerViewInCart"
-        tools:listitem="@layout/product_item_in_cart"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"/>
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <TextView
+            android:layout_marginHorizontal="60dp"
+            android:id="@+id/emtyCart"
+            android:textAllCaps="true"
+            android:textColor="@color/color_title"
+            android:textStyle="bold"
+            android:textAlignment="center"
+            android:layout_marginTop="20dp"
+            android:textSize="20sp"
+            android:layout_gravity="center"
+            android:text="@string/emty_cart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+
+        <androidx.recyclerview.widget.RecyclerView
+            app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+            android:id="@+id/recyclerViewInCart"
+            tools:listitem="@layout/product_item_in_cart"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:textStyle="bold"
+            android:padding="10dp"
+            android:textSize="18sp"
+            android:layout_margin="20dp"
+            android:background="#C8C8C8"
+            android:id="@+id/txtVoucher"
+            android:text="Voucher"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <TextView
+            android:id="@+id/txtBill"
+            android:textAlignment="textEnd"
+            android:padding="10dp"
+            android:layout_margin="20dp"
+            android:textSize="18sp"
+            android:text="Thành tiền:\n tổng cộng"
+            android:background="@drawable/border_tiny"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"/>
+        <Button
+            android:id="@+id/btnOrder"
+            android:textStyle="bold"
+            android:padding="10dp"
+            android:layout_gravity="right"
+            android:textSize="22sp"
+            android:textColor="@color/white"
+            android:backgroundTint="@color/color_bottom_nav"
+            android:text="Đặt hàng"
+            android:layout_width="match_parent"
+            android:layout_height="80dp"/>
+    </LinearLayout>
+</ScrollView>
+
+
 
 </LinearLayout>

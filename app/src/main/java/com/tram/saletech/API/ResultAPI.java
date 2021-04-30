@@ -104,4 +104,24 @@ public class ResultAPI {
         return callbackProduct;
 
     }
+    public Call<List<Voucher>> getVoucherAPI(Integer idUser) {
+        init();
+        Call<List<Voucher>> callbackVoucher = this.apiRequest.getVoucherAPII(idUser);
+
+        return callbackVoucher;
+
+    }
+    /*
+            @Field("iduser") int userid,
+            @Field("list") String listProduct,
+            @Field("idvoucher") int idvoucher,
+            @Field("bill") int totalBill
+     */
+    public Call<String> insertToOrder(int userid, String listProduct, int idvoucher, int totalBill) {
+        init();
+        Call<String> callbackVoucher = this.apiRequest.insertToOrderI(userid, listProduct, idvoucher, totalBill);
+
+        return callbackVoucher;
+
+    }
 }

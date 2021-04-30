@@ -21,6 +21,8 @@ public class GetCart {
         }
         return instance;
     }
+    //đầu vào là string dạng 1of2,5of8
+    //đầu ra là dạng [{1,2},{5,8}]
     public List<String[]> StringToArray(String str)
     {
         List<String[]> arr2;
@@ -32,6 +34,7 @@ public class GetCart {
         }
         return arr2;
     }
+
     public String listToStringSendAPI(String str)
     {
         String stringForSendAPI = "";
@@ -46,7 +49,8 @@ public class GetCart {
     public List<String[]> remove(int position, List<String[]> arr)
     {
         List<String[]> result = arr;
-        result.remove(position);
+        if(result.size() > position)
+            result.remove(position);
 //        for (int i = 0; i < result.size(); i++) {
 //            Log.d("BBB",result.get(i)[0]);
 //            Log.d("BBB",result.get(i)[1]);
@@ -76,8 +80,11 @@ public class GetCart {
                     for (int j = 0; j < listAllProduct.size(); j++) {
                         String idInput = listInCart.get(i)[0];
                         String idList = listAllProduct.get(j).getId();
+                        Product tempProduct;
                         if (idInput.equals(idList)) {
-                            arr.add(listAllProduct.get(j));
+                            tempProduct = listAllProduct.get(j);
+                            tempProduct.setQuantity(Integer.parseInt(listInCart.get(i)[1]));
+                            arr.add(tempProduct);
                         }
 
                     }

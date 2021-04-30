@@ -3,6 +3,7 @@ package com.tram.saletech.RecyclerView;
 import android.content.Context;
 import android.text.Editable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -50,14 +51,19 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         holder.mTvNameProduct.setText(product.getName());
         int sale = Integer.parseInt(product.getSale());
         holder.mTvsale.setText(String.format("%,d",sale) + "đ");
-        int quantity = Integer.parseInt(String.valueOf(holder.mTvEdtquantity.getEditableText()));
-
-            holder.mTvprice.setText(String.valueOf(String.format("%,d",sale * quantity) + "đ"));
 
 
-        holder.mTvprice.setText(String.valueOf(String.format("%,d",sale * quantity) + "đ"));
+        try {
+            holder.mTvEdtquantity.setText(mGetCart.listAllCart.get(position)[1]);
+        } catch (Exception e) {
+            Log.d("BBB","(111) Lỗi từ CartAdapter: " + e.getMessage());
+        }
+        int quantity = Integer.parseInt(holder.mTvEdtquantity.getEditableText().toString());
 
-        holder.mTvEdtquantity.setText(mGetCart.listAllCart.get(position)[1]);
+
+        holder.mTvTotalPrice.setText(String.format("%,d",sale * quantity) + "đ");
+
+
     }
 
     @Override
@@ -75,7 +81,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
         TextView mTvNameProduct;
         TextView mTvsale;
         EditText mTvEdtquantity;
-        TextView mTvprice;
+        TextView mTvTotalPrice;
         Button mTvBtndel;
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -83,7 +89,7 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
             mTvNameProduct = itemView.findViewById(R.id.nameProduct);
             mTvsale = itemView.findViewById(R.id.sale);
             mTvEdtquantity = itemView.findViewById(R.id.quantity);
-            mTvprice = itemView.findViewById(R.id.price);
+            mTvTotalPrice = itemView.findViewById(R.id.totalPrice);
             mTvBtndel = itemView.findViewById(R.id.delBtn);
 
 
@@ -95,6 +101,8 @@ public class CartAdapter extends RecyclerView.Adapter<CartAdapter.ViewHolder> {
                     }
                 }
             });
+
+
 
 
         }

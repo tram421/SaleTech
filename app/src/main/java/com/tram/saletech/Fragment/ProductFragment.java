@@ -183,19 +183,23 @@ public class ProductFragment extends Fragment {
     public void onStart() {
 
         super.onStart();
+
     }
 
-    private void getProductItemToCart()
+    static String getProductItemToCart(Boolean flag, ProductAdapter adapter, List<Product> arr)
     {
-        if (flagRunFinish) {
+        String result;
+        if (flag) {
             GetCart mGetCart = GetCart.getInstance();
-                mAdapter.setOnItemAddToCart(new OnListenerToAddCart() {
+            adapter.setOnItemAddToCart(new OnListenerToAddCart() {
                     @Override
                     public void onClick(int postiton) {
-
                         if(mGetCart.listAllCart != null) {
                             boolean flagEnter = false;
-                            int id = Integer.parseInt(mArr.get(postiton).getId());
+                            if(arr != null && arr.size() > postiton) {
+                                try {
+                                    int id = Integer.parseInt(arr.get(postiton).getId());
+
 //                            if (mGetCart.listAllCart.size() > 0) {
                                 for (int i = 0; i < mGetCart.listAllCart.size(); i++) {
                                     if (id == Integer.parseInt(mGetCart.listAllCart.get(i)[0])) {
@@ -220,12 +224,19 @@ public class ProductFragment extends Fragment {
                                     };
                                     mGetCart.listAllCart.add(st);
                                 }
-                                Toast.makeText(getActivity(), "Đã thêm vào giỏ hàng ", Toast.LENGTH_SHORT).show();
+                                Log.d("BBB","Thêm sản phẩm thành công");
+//                                Toast Thành công
 //                            }
+                                } catch (Exception e) {
+                                    Log.d("BBB","Lỗi trong ProductFragment: " + e.getMessage());
+                                }
+                            }
+
+
 
                         } else { //nếu chưa có sản phẩm nào trong giỏ hàng
                             String[] addToCart = {
-                                    String.valueOf(mArr.get(postiton).getId()),
+                                    String.valueOf(arr.get(postiton).getId()),
                                     String.valueOf(1)
                             };
                                 mGetCart.listAllCart = new ArrayList<>();
@@ -233,20 +244,30 @@ public class ProductFragment extends Fragment {
 
 
                         }
+
                     }
 
                 });
 
 
+            result = "Đã thêm vào giỏ hàng";
         } else {
+            result = "Chưa thể thêm vào giỏ hàng";
             new Handler().postDelayed(new Runnable() {
                 @Override
                 public void run() {
-                    getProductItemToCart();
-                }
+                    try {
+                        getProductItemToCart(flag, adapter, arr);
+                    } catch (Exception e) {
+                        Log.d("BBB","Lỗi trong ProductFragment: " + e.getMessage());
+                    }
+
+
+                }//flagRunFinish
             },2000);
 
         }
+        return result;
     }
 
     //gọi mỗi khi mở sang tab product
@@ -273,7 +294,7 @@ public class ProductFragment extends Fragment {
             mAdapter = new ProductAdapter(mArr);
             mRecyclerView.setAdapter(mAdapter);
             setFirstData();
-            flagRunFinish = true;
+            flagRunFinish = true; //chạy xong recycler ,  khi mở app lần đầu cung chạy xong flag này
             //cuộn trang để load more
             mRecyclerView.addOnScrollListener(new PaginationScrollListener(layoutManager, mListAPI, currentPage, flagLoadmore) {
                 @Override
@@ -282,6 +303,11 @@ public class ProductFragment extends Fragment {
                     currentPage += 1;
                     //Độ trễ để đủ thời gian get dữ liệu về từ API
                     loadNextPage();
+                    try {
+                        getProductItemToCart(flagRunFinish, mAdapter, mArr);
+                    } catch (Exception e) {
+                        Log.d("BBB","(111) Lỗi trong ProductFragment: " + e.getMessage());
+                    }
                 }
                 @Override
                 public boolean isLoading() {
@@ -297,6 +323,7 @@ public class ProductFragment extends Fragment {
             });
 
 
+
         } else {
             if(mainActivity.mProductFragment.getArguments() != null){
                 mSearch = mainActivity.mProductFragment.getArguments().getString("Send_fragment");
@@ -307,8 +334,12 @@ public class ProductFragment extends Fragment {
                 }
             }
         }
+        try {
+            getProductItemToCart(flagRunFinish, mAdapter, mArr);
+        } catch (Exception e) {
+            Log.d("BBB","(222) Lỗi trong ProductFragment: " + e.getMessage());
+        }
 
-        getProductItemToCart();
 
 
 //        Log.d("BBB",mainActivity.mInputSearch.getText().toString() + " : mInputSearch");

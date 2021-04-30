@@ -61,7 +61,7 @@
                 android:layout_height="20dp"/>
             <TextView
                 android:textSize="16sp"
-                android:id="@+id/price"
+                android:id="@+id/totalPrice"
                 android:textColor="#851200"
                 android:textStyle="bold"
                 android:layout_marginLeft="10dp"

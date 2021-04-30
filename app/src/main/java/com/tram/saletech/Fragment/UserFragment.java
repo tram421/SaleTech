@@ -19,14 +19,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.tram.saletech.API.APIRequest;
+import com.tram.saletech.API.LoadImage;
 import com.tram.saletech.API.ResultAPI;
 import com.tram.saletech.API.User;
+import com.tram.saletech.API.Voucher;
+import com.tram.saletech.API.VoucherInfo;
 import com.tram.saletech.Activities.MainActivity;
 import com.tram.saletech.R;
 
@@ -57,8 +61,10 @@ public class UserFragment extends Fragment {
     String mAdressUser;
     String mPhoneUser;
     String mIdproduct;
+    ImageView mImgVoucher;
     int mIdVoucher, mIdOrder;
     static CartFragment mCartFragment;
+    VoucherInfo mVoucherInfo;
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -123,9 +129,11 @@ public class UserFragment extends Fragment {
         loadPreferences();
 
         loadInfoUser(mUserId);
+
+        mVoucherInfo = VoucherInfo.getInstance();
+        mImgVoucher = view.findViewById(R.id.imgVoucher);
+        getAPIVoucher();
         loadStateAndUpdateView();
-
-
 
 
         return view;
@@ -153,7 +161,10 @@ public class UserFragment extends Fragment {
                             //ĐĂNG NHẬP THÀNH CÔNG
                             Toast.makeText(getContext(), "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                             savePreferences("login", mUserId);
+                            loadInfoUser(mUserId);
+                            getAPIVoucher();
                             loadStateAndUpdateView();
+
                         } else if (Integer.parseInt(respontCuted) == 200) {
                             Toast.makeText(getContext(), "Sai mật khẩu", Toast.LENGTH_SHORT).show();
                         } else {
@@ -179,14 +190,39 @@ public class UserFragment extends Fragment {
         });
 
     }
-
     @Override
     public void onResume() {
         super.onResume();
         loadPreferences();
-        loadStateAndUpdateView();
+
         loadInfoUser(mUserId);
+        getAPIVoucher();
+        loadStateAndUpdateView();
     }
+
+    private void getAPIVoucher()
+    {
+        ResultAPI callAPIvoucher = new ResultAPI();
+        callAPIvoucher.getVoucherAPI(mUserId).enqueue(new Callback<List<Voucher>>() {
+            @Override
+            public void onResponse(Call<List<Voucher>> call, Response<List<Voucher>> response) { //kết quả chỉ có 1 voucher
+                final String imgURL  = "http://maitram.net/" + response.body().get(0).getImage();
+                new LoadImage(mImgVoucher).execute(imgURL);
+                mVoucherInfo.valueVoucher = response.body().get(0).getValue();
+                mVoucherInfo.nameVoucher = response.body().get(0).getName();
+                mVoucherInfo.imgVoucher = imgURL;
+                mVoucherInfo.idVoucher = response.body().get(0).getId();
+
+            }
+
+            @Override
+            public void onFailure(Call<List<Voucher>> call, Throwable t) {
+                Log.d("BBB","Lỗi trong UserFragment: " + t.getMessage());
+            }
+        });
+    }
+
+
 
     private void savePreferences(String state, Integer userId)
     {
@@ -206,17 +242,26 @@ public class UserFragment extends Fragment {
     }
     private void loadStateAndUpdateView()
     {
-        if (state.equals("login")) {
-            mLayoutForm.setVisibility(View.GONE);
-            mLayoutLoginSuccess.setVisibility(View.VISIBLE);
-            mUserInfo.setText("Họ tên: " + mFullNameUser + "\n" + "Điện thoại: " + mPhoneUser + "\n"
-                                + "Địa chỉ: " + mAdressUser);
-        }
-        if (state.equals("logout")) {
-            mLayoutForm.setVisibility(View.VISIBLE);
-            mLayoutLoginSuccess.setVisibility(View.GONE);
-        }
-        mEdtPass.setText("");
+                if (state.equals("login")) {
+                    mLayoutForm.setVisibility(View.GONE);
+                    mLayoutLoginSuccess.setVisibility(View.VISIBLE);
+
+                    mUserInfo.setText("Họ tên: " + mFullNameUser + "\n" + "Điện thoại: " + mPhoneUser + "\n"
+                            + "Địa chỉ: " + mAdressUser);
+                    if(mVoucherInfo.imgVoucher != null) {
+                        new LoadImage(mImgVoucher).execute(mVoucherInfo.imgVoucher);
+                    }
+
+                }
+                if (state.equals("logout")) {
+                    mLayoutForm.setVisibility(View.VISIBLE);
+                    mLayoutLoginSuccess.setVisibility(View.GONE);
+                }
+                mEdtPass.setText("");
+
+
+
+
     }
     private void mapping(View view)
     {
