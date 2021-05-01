@@ -213,9 +213,13 @@ public class CartFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
+
+
+
                 loadInfoUser(mIdUser); //lấy thông tin user
 
                 mArr = mGetCart.listProductInCart(mAllProduct.listAllProduct, mGetCart.listAllCart);

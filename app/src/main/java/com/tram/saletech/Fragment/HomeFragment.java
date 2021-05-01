@@ -1,6 +1,7 @@
 package com.tram.saletech.Fragment;
 
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
@@ -35,6 +36,9 @@ import com.tram.saletech.API.GetProductFromAPI;
 import com.tram.saletech.API.LoadImage;
 import com.tram.saletech.API.Product;
 import com.tram.saletech.Activities.MainActivity;
+import com.tram.saletech.Activities.ProductActivity;
+import com.tram.saletech.AppConstants;
+import com.tram.saletech.Interface.OnlistenerClickToView;
 import com.tram.saletech.R;
 import com.tram.saletech.RecyclerView.ProductAdapter;
 
@@ -139,6 +143,8 @@ public class HomeFragment extends Fragment{
 //
 //        view.loadData(getString(R.string.hello), "text/html; charset=utf-8", "utf-8");
 
+
+
         return view;
     }
 
@@ -167,7 +173,18 @@ public class HomeFragment extends Fragment{
 
 
     }
+    void clickViewProduct(ProductAdapter adapter, List<Product> arr)
+    {
+        adapter.setOnItemToView(new OnlistenerClickToView() {
+            @Override
+            public void onClickToView(int position) {
+                Intent intent = new Intent(getActivity(), ProductActivity.class);
+                intent.putExtra(AppConstants.KEY_INTENT_VIEW_PRODUCT, arr.get(position));
+                startActivity(intent);
 
+            }
+        });
+    }
     private void initRecyclerViews(View view, List<Product> listAPI){
 
                 ProductAdapter listHotAdapter;
@@ -228,6 +245,9 @@ public class HomeFragment extends Fragment{
                 ProductFragment.getProductItemToCart(true, listHotAdapter, listHotArr);
                 ProductFragment.getProductItemToCart(true, listSaleAdapter, list);
                 ProductFragment.getProductItemToCart(true, listNewAdapter, listNewArr);
+                clickViewProduct(listHotAdapter,listHotArr);
+                clickViewProduct(listSaleAdapter,list);
+                clickViewProduct(listNewAdapter,listNewArr);
 
             }
 

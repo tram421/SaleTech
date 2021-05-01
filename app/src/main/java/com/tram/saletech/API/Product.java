@@ -1,5 +1,7 @@
 package com.tram.saletech.API;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -10,9 +12,9 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class Product {
+public class Product implements Parcelable {
         private String id;
-        private String name;
+        String name;
         private String image;
         private String price;
         private String sale;
@@ -178,4 +180,49 @@ public class Product {
         return listMock;
     }
 
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+    protected Product(Parcel in) {
+        id = in.readString();
+        name = in.readString();
+        image = in.readString();
+        price = in.readString();
+        sale = in.readString();
+        description = in.readString();
+        idCategory = in.readString();
+        rate = in.readString();
+        similar = in.readString();
+        isFeature = in.readInt();
+        quantity = in.readInt();
+    }
+
+    public static final Creator<Product> CREATOR = new Creator<Product>() {
+        @Override
+        public Product createFromParcel(Parcel in) {
+            return new Product(in);
+        }
+
+        @Override
+        public Product[] newArray(int size) {
+            return new Product[size];
+        }
+    };
+
+
+    @Override
+    public void writeToParcel(Parcel dest, int flags) {
+        dest.writeString(id);
+        dest.writeString(name);
+        dest.writeString(image);
+        dest.writeString(price);
+        dest.writeString(sale);
+        dest.writeString(description);
+        dest.writeString(idCategory);
+        dest.writeString(rate);
+        dest.writeString(similar);
+        dest.writeInt(isFeature);
+        dest.writeInt(quantity);
+    }
 }

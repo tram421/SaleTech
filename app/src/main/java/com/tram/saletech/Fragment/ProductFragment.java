@@ -31,8 +31,11 @@ import com.tram.saletech.API.MyFlag;
 import com.tram.saletech.API.Product;
 import com.tram.saletech.API.ResultAPI;
 import com.tram.saletech.Activities.MainActivity;
+import com.tram.saletech.Activities.ProductActivity;
+import com.tram.saletech.AppConstants;
 import com.tram.saletech.Interface.OnListenerItem;
 import com.tram.saletech.Interface.OnListenerToAddCart;
+import com.tram.saletech.Interface.OnlistenerClickToView;
 import com.tram.saletech.R;
 import com.tram.saletech.RecyclerView.PaginationScrollListener;
 import com.tram.saletech.RecyclerView.ProductAdapter;
@@ -42,6 +45,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.io.Serializable;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -185,7 +189,18 @@ public class ProductFragment extends Fragment {
         super.onStart();
 
     }
+    void clickViewProduct(ProductAdapter adapter, List<Product> arr)
+    {
+        adapter.setOnItemToView(new OnlistenerClickToView() {
+            @Override
+            public void onClickToView(int position) {
+                Intent intent = new Intent(getActivity(), ProductActivity.class);
+                intent.putExtra(AppConstants.KEY_INTENT_VIEW_PRODUCT, arr.get(position));
+                startActivity(intent);
 
+            }
+        });
+    }
     static String getProductItemToCart(Boolean flag, ProductAdapter adapter, List<Product> arr)
     {
         String result;
@@ -225,6 +240,8 @@ public class ProductFragment extends Fragment {
                                     mGetCart.listAllCart.add(st);
                                 }
                                 Log.d("BBB","Thêm sản phẩm thành công");
+
+
 //                                Toast Thành công
 //                            }
                                 } catch (Exception e) {
@@ -258,6 +275,7 @@ public class ProductFragment extends Fragment {
                 public void run() {
                     try {
                         getProductItemToCart(flag, adapter, arr);
+
                     } catch (Exception e) {
                         Log.d("BBB","Lỗi trong ProductFragment: " + e.getMessage());
                     }
@@ -303,8 +321,10 @@ public class ProductFragment extends Fragment {
                     currentPage += 1;
                     //Độ trễ để đủ thời gian get dữ liệu về từ API
                     loadNextPage();
+                    clickViewProduct(mAdapter, mArr);
                     try {
                         getProductItemToCart(flagRunFinish, mAdapter, mArr);
+
                     } catch (Exception e) {
                         Log.d("BBB","(111) Lỗi trong ProductFragment: " + e.getMessage());
                     }
@@ -336,6 +356,7 @@ public class ProductFragment extends Fragment {
         }
         try {
             getProductItemToCart(flagRunFinish, mAdapter, mArr);
+            clickViewProduct(mAdapter, mArr);
         } catch (Exception e) {
             Log.d("BBB","(222) Lỗi trong ProductFragment: " + e.getMessage());
         }

@@ -6,6 +6,7 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
 import retrofit2.Call;
@@ -21,6 +22,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -52,7 +54,7 @@ public class UserFragment extends Fragment {
     TextView mSignUp;
     EditText mEdtUser, mEdtPass;
     Button mBtnLogin;
-    RelativeLayout mLayoutForm;
+    ConstraintLayout mLayoutForm;
     RelativeLayout mLayoutLoginSuccess;
     TextView mBtnLogout;
     //Info user
@@ -74,6 +76,7 @@ public class UserFragment extends Fragment {
     RecyclerView mRecyclerViewOrder;
     private OrderAdapter mAdapter;
     private List<Order> mArr;
+    LinearLayout mVoucherLayout;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -142,6 +145,7 @@ public class UserFragment extends Fragment {
         mVoucherInfo = VoucherInfo.getInstance();
         mImgVoucher = view.findViewById(R.id.imgVoucher);
         mOrderInfo = OrderInfo.getInstance();
+        mVoucherLayout = view.findViewById(R.id.voucherlayout);
         getAPIVoucher();
         loadStateAndUpdateView();
 
@@ -180,6 +184,7 @@ public class UserFragment extends Fragment {
                             getAPIVoucher();
                             loadStateAndUpdateView();
 
+
                         } else if (Integer.parseInt(respontCuted) == 200) {
                             Toast.makeText(getContext(), "Sai mật khẩu", Toast.LENGTH_SHORT).show();
                         } else {
@@ -201,6 +206,8 @@ public class UserFragment extends Fragment {
             public void onClick(View v) {
                 savePreferences("logout", mUserId);
                 loadStateAndUpdateView();
+
+
             }
         });
 
@@ -260,7 +267,8 @@ public class UserFragment extends Fragment {
                 if (state.equals("login")) {
                     mLayoutForm.setVisibility(View.GONE);
                     mLayoutLoginSuccess.setVisibility(View.VISIBLE);
-
+                    mVoucherLayout.setVisibility(View.VISIBLE);
+                    mRecyclerViewOrder.setVisibility(View.VISIBLE);
                     mUserInfo.setText("Họ tên: " + mFullNameUser + "\n" + "Điện thoại: " + mPhoneUser + "\n"
                             + "Địa chỉ: " + mAdressUser);
                     if(mVoucherInfo.imgVoucher != null) {
@@ -268,7 +276,9 @@ public class UserFragment extends Fragment {
                     }
                 }
                 if (state.equals("logout")) {
+                    mRecyclerViewOrder.setVisibility(View.GONE);
                     mLayoutForm.setVisibility(View.VISIBLE);
+                    mVoucherLayout.setVisibility(View.GONE);
                     mLayoutLoginSuccess.setVisibility(View.GONE);
                 }
                 mEdtPass.setText("");

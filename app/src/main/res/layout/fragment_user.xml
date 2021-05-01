@@ -15,40 +15,50 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:orientation="vertical">
-            <RelativeLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/layoutLoginForm"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:visibility="gone"
+                android:layout_gravity="center"
                 android:padding="20dp">
                 <ImageView
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toTopOf="@+id/user"
+                    android:id="@+id/logo"
                     android:layout_marginBottom="30dp"
                     android:layout_centerHorizontal="true"
                     android:layout_above="@+id/user"
                     android:src="@drawable/logo"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"/>
+                    android:layout_width="200dp"
+                    android:layout_height="200dp" />
                 <EditText
+                    app:layout_constraintTop_toBottomOf="@+id/logo"
                     android:hint="@string/username"
                     android:layout_margin="10dp"
                     android:padding="10dp"
                     android:background="@color/white"
                     android:id="@+id/user"
-                    android:layout_centerVertical="true"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
                 <EditText
+                    app:layout_constraintTop_toBottomOf="@+id/user"
+                    android:layout_centerInParent="true"
                     android:inputType="textPassword"
                     android:id="@+id/password"
                     android:hint="@string/password"
                     android:layout_margin="10dp"
                     android:padding="10dp"
                     android:background="@color/white"
-                    android:layout_centerVertical="true"
                     android:layout_below="@+id/user"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"/>
                 <Button
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/password"
                     android:textColor="@color/white"
                     android:id="@+id/login"
                     android:layout_marginTop="10dp"
@@ -59,6 +69,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
                 <TextView
+                    app:layout_constraintTop_toBottomOf="@+id/login"
+                    app:layout_constraintRight_toRightOf="parent"
+                    app:layout_constraintLeft_toLeftOf="parent"
                     android:textSize="18sp"
                     android:textStyle="bold"
                     android:id="@+id/signup"
@@ -68,7 +81,7 @@
                     android:text="@string/signup"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"/>
-            </RelativeLayout>
+            </androidx.constraintlayout.widget.ConstraintLayout>
             <RelativeLayout
                 android:id="@+id/layoutSignInSuccess"
                 android:visibility="visible"
@@ -79,7 +92,7 @@
                     android:padding="20dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="vertical">\
+                    android:orientation="vertical">
                     <TextView
                         android:id="@+id/userInfo"
                         android:textStyle="bold"
@@ -101,6 +114,7 @@
 
             </RelativeLayout>
             <LinearLayout
+                android:id="@+id/voucherlayout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="20dp"

@@ -18,6 +18,7 @@ import com.tram.saletech.API.Product;
 import com.tram.saletech.Fragment.ProductFragment;
 import com.tram.saletech.Interface.OnListenerItem;
 import com.tram.saletech.Interface.OnListenerToAddCart;
+import com.tram.saletech.Interface.OnlistenerClickToView;
 import com.tram.saletech.R;
 
 import java.io.InputStream;
@@ -37,6 +38,7 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     List<Product> mListProduct;
     private Boolean isLoadingAdd = true;
     OnListenerToAddCart mOnListenerToAddCart;
+    OnlistenerClickToView mOnClickToView;
     @Override
     public int getItemViewType(int position) {
         if (mListProduct != null && position == (mListProduct.size()-1) && isLoadingAdd == true) {
@@ -135,6 +137,18 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
                 }
             });
 
+            mTvimageProduct.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mOnClickToView != null) {
+                        mOnClickToView.onClickToView(getAdapterPosition());
+                    } else {
+                        Log.d("BBB","Trong Product Adapter : Chưa gọi được hàm click");
+                    }
+                }
+            });
+
+
         }
     }
     public class LoadingViewHolder extends RecyclerView.ViewHolder{
@@ -170,6 +184,9 @@ public class ProductAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder
     public void setOnItemAddToCart(OnListenerToAddCart onListenerToAddCart){
         this.mOnListenerToAddCart = onListenerToAddCart;
 
+    }
+    public void setOnItemToView(OnlistenerClickToView onListenerToView){
+        this.mOnClickToView = onListenerToView;
     }
     public void removeFooterLoadingWithParam(List<Product> list, int position){
 //            Product product = mListProduct.get(position);
