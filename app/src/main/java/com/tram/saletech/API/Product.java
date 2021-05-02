@@ -14,7 +14,7 @@ import retrofit2.Response;
 
 public class Product implements Parcelable {
         private String id;
-        String name;
+        private String name;
         private String image;
         private String price;
         private String sale;

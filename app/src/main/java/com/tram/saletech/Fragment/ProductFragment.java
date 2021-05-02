@@ -8,6 +8,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import retrofit2.Call;
@@ -189,19 +190,19 @@ public class ProductFragment extends Fragment {
         super.onStart();
 
     }
-    void clickViewProduct(ProductAdapter adapter, List<Product> arr)
+    static void clickViewProduct(FragmentActivity fragmentActivity, ProductAdapter adapter, List<Product> arr)
     {
         adapter.setOnItemToView(new OnlistenerClickToView() {
             @Override
             public void onClickToView(int position) {
-                Intent intent = new Intent(getActivity(), ProductActivity.class);
+                Intent intent = new Intent(fragmentActivity, ProductActivity.class);
                 intent.putExtra(AppConstants.KEY_INTENT_VIEW_PRODUCT, arr.get(position));
-                startActivity(intent);
+                fragmentActivity.startActivity(intent);
 
             }
         });
     }
-    static String getProductItemToCart(Boolean flag, ProductAdapter adapter, List<Product> arr)
+    public static String getProductItemToCart(Boolean flag, ProductAdapter adapter, List<Product> arr)
     {
         String result;
         if (flag) {
@@ -321,7 +322,7 @@ public class ProductFragment extends Fragment {
                     currentPage += 1;
                     //Độ trễ để đủ thời gian get dữ liệu về từ API
                     loadNextPage();
-                    clickViewProduct(mAdapter, mArr);
+                    clickViewProduct(getActivity(), mAdapter, mArr);
                     try {
                         getProductItemToCart(flagRunFinish, mAdapter, mArr);
 
@@ -344,7 +345,7 @@ public class ProductFragment extends Fragment {
 
 
 
-        } else {
+        } else { //chuyển tab mà có dữ liệu trong input text
             if(mainActivity.mProductFragment.getArguments() != null){
                 mSearch = mainActivity.mProductFragment.getArguments().getString("Send_fragment");
                 if(mSearch != null){
@@ -356,7 +357,7 @@ public class ProductFragment extends Fragment {
         }
         try {
             getProductItemToCart(flagRunFinish, mAdapter, mArr);
-            clickViewProduct(mAdapter, mArr);
+            clickViewProduct(getActivity(),mAdapter, mArr);
         } catch (Exception e) {
             Log.d("BBB","(222) Lỗi trong ProductFragment: " + e.getMessage());
         }
@@ -365,6 +366,7 @@ public class ProductFragment extends Fragment {
 
 //        Log.d("BBB",mainActivity.mInputSearch.getText().toString() + " : mInputSearch");
     }
+
     private void loadData(String search){
         mAdapter.removeFooterLoading();
         List<Product> list =  new ArrayList<>();

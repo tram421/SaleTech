@@ -220,7 +220,7 @@ public class CartFragment extends Fragment {
 
 
 
-                loadInfoUser(mIdUser); //lấy thông tin user
+//                loadInfoUser(mIdUser); //lấy thông tin user
 
                 mArr = mGetCart.listProductInCart(mAllProduct.listAllProduct, mGetCart.listAllCart);
                 //cập nhật cart môi khi chuyển sang thẻ cart
@@ -243,7 +243,7 @@ public class CartFragment extends Fragment {
                     }
                 }
 
-                getBill();
+                getBill(); //1
             }
         },500);
 

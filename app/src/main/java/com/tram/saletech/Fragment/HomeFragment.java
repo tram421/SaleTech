@@ -173,18 +173,7 @@ public class HomeFragment extends Fragment{
 
 
     }
-    void clickViewProduct(ProductAdapter adapter, List<Product> arr)
-    {
-        adapter.setOnItemToView(new OnlistenerClickToView() {
-            @Override
-            public void onClickToView(int position) {
-                Intent intent = new Intent(getActivity(), ProductActivity.class);
-                intent.putExtra(AppConstants.KEY_INTENT_VIEW_PRODUCT, arr.get(position));
-                startActivity(intent);
 
-            }
-        });
-    }
     private void initRecyclerViews(View view, List<Product> listAPI){
 
                 ProductAdapter listHotAdapter;
@@ -245,9 +234,9 @@ public class HomeFragment extends Fragment{
                 ProductFragment.getProductItemToCart(true, listHotAdapter, listHotArr);
                 ProductFragment.getProductItemToCart(true, listSaleAdapter, list);
                 ProductFragment.getProductItemToCart(true, listNewAdapter, listNewArr);
-                clickViewProduct(listHotAdapter,listHotArr);
-                clickViewProduct(listSaleAdapter,list);
-                clickViewProduct(listNewAdapter,listNewArr);
+                ProductFragment.clickViewProduct(getActivity(), listHotAdapter,listHotArr);
+                ProductFragment.clickViewProduct(getActivity(), listSaleAdapter,list);
+                ProductFragment.clickViewProduct(getActivity(), listNewAdapter,listNewArr);
 
             }
 
