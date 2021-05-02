@@ -2,7 +2,6 @@ package com.tram.saletech.Fragment;
 
 import android.content.Context;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -21,20 +20,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.tram.saletech.API.AllProduct;
 import com.tram.saletech.API.GetCart;
-import com.tram.saletech.API.GetProductFromAPI;
 import com.tram.saletech.API.MyFlag;
 import com.tram.saletech.API.Product;
 import com.tram.saletech.API.ResultAPI;
 import com.tram.saletech.Activities.MainActivity;
-import com.tram.saletech.Activities.ProductActivity;
+import com.tram.saletech.Activities.ProductDetailActivity;
 import com.tram.saletech.AppConstants;
-import com.tram.saletech.Interface.OnListenerItem;
 import com.tram.saletech.Interface.OnListenerToAddCart;
 import com.tram.saletech.Interface.OnlistenerClickToView;
 import com.tram.saletech.R;
@@ -42,11 +38,9 @@ import com.tram.saletech.RecyclerView.PaginationScrollListener;
 import com.tram.saletech.RecyclerView.ProductAdapter;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.Serializable;
 
 import static android.text.TextUtils.isEmpty;
 
@@ -195,7 +189,7 @@ public class ProductFragment extends Fragment {
         adapter.setOnItemToView(new OnlistenerClickToView() {
             @Override
             public void onClickToView(int position) {
-                Intent intent = new Intent(fragmentActivity, ProductActivity.class);
+                Intent intent = new Intent(fragmentActivity, ProductDetailActivity.class);
                 intent.putExtra(AppConstants.KEY_INTENT_VIEW_PRODUCT, arr.get(position));
                 fragmentActivity.startActivity(intent);
 

@@ -6,7 +6,6 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -29,22 +28,19 @@ import android.webkit.WebView;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import com.tram.saletech.API.AllProduct;
 import com.tram.saletech.API.GetProductFromAPI;
-import com.tram.saletech.API.LoadImage;
 import com.tram.saletech.API.Product;
 import com.tram.saletech.Activities.MainActivity;
 import com.tram.saletech.Activities.ProductActivity;
 import com.tram.saletech.AppConstants;
-import com.tram.saletech.Interface.OnlistenerClickToView;
 import com.tram.saletech.R;
 import com.tram.saletech.RecyclerView.ProductAdapter;
 
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
@@ -54,6 +50,7 @@ import static androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL;
 public class HomeFragment extends Fragment{
     RecyclerView mListHot, mListNew, mListSale;
     List<Product> mListProductAPI;
+    LinearLayout mCatTivi, mCatMayGiat, mCatTulanh, mCatGiadung;
     int eachItemWidth = 430;
     ImageSwitcher mBanner;
     String[] mArrImages = {
@@ -61,6 +58,7 @@ public class HomeFragment extends Fragment{
             "http://maitram.net/api/image/banner2.jpg",
             "http://maitram.net/api/image/banner3.jpg"
     };
+    AllProduct mAllProduct;
     boolean mIsStarted = false;
     int mCount = 0;
     MainActivity mainActivity;
@@ -142,8 +140,11 @@ public class HomeFragment extends Fragment{
 //        ((LinearLayout)view.findViewById(R.id.footerContent)).addView(view);
 //
 //        view.loadData(getString(R.string.hello), "text/html; charset=utf-8", "utf-8");
-
-
+        mAllProduct = AllProduct.getInstance();
+        mCatTivi = view.findViewById(R.id.catTivi);
+        mCatMayGiat = view.findViewById(R.id.catMayGiat);
+        mCatTulanh = view.findViewById(R.id.catTulanh);
+        mCatGiadung = view.findViewById(R.id.catGiadung);
 
         return view;
     }
@@ -151,6 +152,33 @@ public class HomeFragment extends Fragment{
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
+        mCatTivi.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getCat(1);
+            }
+        });
+        mCatMayGiat.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getCat(3);
+            }
+        });
+        mCatTulanh.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getCat(2);
+            }
+        });
+        mCatGiadung.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                getCat(4);
+            }
+        });
+
+
+
 
     }
 
@@ -172,8 +200,40 @@ public class HomeFragment extends Fragment{
         super.onStart();
 
 
+
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+
+    }
+
+    private void getCat(int idCat)
+    {
+        Log.d("BBB","vào hàm get cat");
+        List<Product> list =  new ArrayList<>();
+        String[] key;
+
+        if (mAllProduct.listAllProduct != null) {
+            for (int i = 0; i < mAllProduct.listAllProduct.size(); i++) {
+
+                if (mAllProduct.listAllProduct.get(i).getIdCategory().equals(String.valueOf(idCat)))    {
+                    list.add(mAllProduct.listAllProduct.get(i));
+
+                }
+            }
+            Intent intent = new Intent(getActivity(), ProductActivity.class);
+            for (int i = 0; i < list.size(); i++) {
+                intent.putExtra(AppConstants.KEY_INTENT_SEND_PRODUCT_SIZE, list.size());
+                key = new String[list.size()];
+                key[i] = AppConstants.KEY_INTENT_SEND_PRODUCT_KEYOF_ARR + i;
+                intent.putExtra(key[i], list.get(i));
+            }
+            startActivity(intent);
+
+        }
+    }
     private void initRecyclerViews(View view, List<Product> listAPI){
 
                 ProductAdapter listHotAdapter;
@@ -239,6 +299,7 @@ public class HomeFragment extends Fragment{
                 ProductFragment.clickViewProduct(getActivity(), listNewAdapter,listNewArr);
 
             }
+
 
 
 }
