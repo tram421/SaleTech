@@ -184,7 +184,7 @@ public class ProductFragment extends Fragment {
         super.onStart();
 
     }
-    static void clickViewProduct(FragmentActivity fragmentActivity, ProductAdapter adapter, List<Product> arr)
+    public static void clickViewProduct(FragmentActivity fragmentActivity, ProductAdapter adapter, List<Product> arr)
     {
         adapter.setOnItemToView(new OnlistenerClickToView() {
             @Override
@@ -315,6 +315,7 @@ public class ProductFragment extends Fragment {
                     isLoading = true;
                     currentPage += 1;
                     //Độ trễ để đủ thời gian get dữ liệu về từ API
+
                     loadNextPage();
                     clickViewProduct(getActivity(), mAdapter, mArr);
                     try {
@@ -421,20 +422,26 @@ public class ProductFragment extends Fragment {
     }
 
     private void loadNextPage() {
-        if (currentPage <= totalPage) {
-            isLoading = false;
-            List<Product> list = getListProduct(currentPage);
-            mAdapter.removeFooterLoading();
-            mArr.addAll(list);
-            mAdapter.notifyDataSetChanged();
-            if(currentPage != totalPage)mAdapter.addFooterLoading();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                if (currentPage <= totalPage) {
+                    isLoading = false;
+                    List<Product> list = getListProduct(currentPage);
+                    mAdapter.removeFooterLoading();
+                    mArr.addAll(list);
+                    mAdapter.notifyDataSetChanged();
+                    if(currentPage != totalPage)mAdapter.addFooterLoading();
 
 
-        } else {
-            Log.d("BBB", "Quá số trang");
-            isLastpage = true;
-            mAdapter.removeFooterLoading();
-        }
+                } else {
+                    Log.d("BBB", "Quá số trang");
+                    isLastpage = true;
+                    mAdapter.removeFooterLoading();
+                }
+            }
+        },2000);
+
     }
     private  List<Product> startReadAPI(){
         //Tạo 1 thread riêng đọc API, Quá trình đọc khá chậm không muốn ảnh hưởng đến main thread

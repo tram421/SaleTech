@@ -162,7 +162,6 @@ public class CartFragment extends Fragment {
             @Override
             public void onResponse(Call<String> call, Response<String> response) {
 //                mOrderInfo.idOrder[] = Integer.parseInt(response.body());
-                Log.d("BBB",response.body());
                 if(Integer.parseInt(response.body()) > 0) {
                     Toast.makeText(getActivity(), "Đặt hàng thành công", Toast.LENGTH_SHORT).show();
                 }
@@ -381,7 +380,6 @@ public class CartFragment extends Fragment {
                                                 for (int j = 0; j < response.body().size(); j++) {
                                                     for (int i = 0; i < mGetCart.listAllCart.size(); i++) {
                                                         if(response.body().get(j).getId().equals(mGetCart.listAllCart.get(i)[0])){
-                                                            Log.d("BBB","vào hàm kiểm tra");
                                                             quantity = Integer.parseInt(mGetCart.listAllCart.get(i)[1]);
                                                             tempProduct = response.body().get(j);
                                                             tempProduct.setQuantity(quantity);

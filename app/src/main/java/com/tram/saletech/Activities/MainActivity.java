@@ -13,7 +13,14 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
 import android.view.View;
@@ -23,6 +30,7 @@ import android.widget.Toast;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.tram.saletech.API.GetCart;
+import com.tram.saletech.BroadcastInternet;
 import com.tram.saletech.Fragment.HomeFragment;
 import com.tram.saletech.Fragment.ProductFragment;
 import com.tram.saletech.Navigation.ViewPagerAdapter;
@@ -32,6 +40,7 @@ import com.tram.saletech.Navigation.Navigation;
 import static android.text.TextUtils.isEmpty;
 
 public class MainActivity extends AppCompatActivity{
+    private BroadcastInternet mMyBroadCast;
     ViewPager mViewPager;
     BottomNavigationView bottomNavigationView;
     Navigation mNavigation = new Navigation();
@@ -69,7 +78,58 @@ public class MainActivity extends AppCompatActivity{
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
+
+
+
+        boolean connected = false;
+        ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
+        if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
+                connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState() == NetworkInfo.State.CONNECTED) {
+            //we are connected to a network
+            connected = true;
+        }
+        else
+            connected = false;
+
+        if (!connected) {
+            Intent intent = new Intent(MainActivity.this, NoInternetActivity.class);
+            startActivity(intent);
+            super.onStop();
+
+
+
+
+
+        }
+
+
+        //broadcast
+        mMyBroadCast = new BroadcastInternet();
+        IntentFilter filter = new IntentFilter("android.example.sendBroadcast");
+        filter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
+        registerReceiver(mMyBroadCast, filter);
+        //check internet
+
+
+
         setContentView(R.layout.activity_main);
+
+
+//        public void sendDataToActivity()
+//    {
+////            iSendData = mainActivity;
+//            String string = mInputSearch.getText().toString().trim();
+////            iSendData.send_from_HomeFragment(string);
+//        }
+
+
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         //bottom navigation
         mViewPager = findViewById(R.id.home_viewPager);
         bottomNavigationView = findViewById(R.id.bottomNav_view);
@@ -102,15 +162,6 @@ public class MainActivity extends AppCompatActivity{
                 mInputSearch.setText("");
             }
         });
-
-//        public void sendDataToActivity()
-//    {
-////            iSendData = mainActivity;
-//            String string = mInputSearch.getText().toString().trim();
-////            iSendData.send_from_HomeFragment(string);
-//        }
-
-
     }
 
     public void onBackPressed() {

@@ -6,6 +6,8 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -34,6 +36,7 @@ import com.tram.saletech.API.AllProduct;
 import com.tram.saletech.API.GetProductFromAPI;
 import com.tram.saletech.API.Product;
 import com.tram.saletech.Activities.MainActivity;
+import com.tram.saletech.Activities.NoInternetActivity;
 import com.tram.saletech.Activities.ProductActivity;
 import com.tram.saletech.AppConstants;
 import com.tram.saletech.R;
@@ -79,12 +82,18 @@ public class HomeFragment extends Fragment{
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
         mListProductAPI = new GetProductFromAPI().startReadAPI();
+
+
+
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
+
+
+
 
         mainActivity = (MainActivity) getActivity();
         new Handler().postDelayed(new Runnable() {
@@ -207,11 +216,13 @@ public class HomeFragment extends Fragment{
     public void onResume() {
         super.onResume();
 
+
+
+
     }
 
     private void getCat(int idCat)
     {
-        Log.d("BBB","vào hàm get cat");
         List<Product> list =  new ArrayList<>();
         String[] key;
 
@@ -264,16 +275,19 @@ public class HomeFragment extends Fragment{
                 mListHot.setAdapter(listHotAdapter);
                 listHotAdapter.removeFooterLoading();
                 //SẢN PHẨM MỚI
+                if (listAPI.size() > 0) {
+                    for (int i = listAPI.size()-1; i > (listAPI.size() - 11); i--) {
 
-                for (int i = listAPI.size()-1; i > (listAPI.size() - 11); i--) {
-                    listNewArr.add(listAPI.get(i));
-                }
-                LinearLayout.LayoutParams layoutParams_new = new LinearLayout.LayoutParams(eachItemWidth * listNewArr.size(), LinearLayout.LayoutParams.WRAP_CONTENT);
-                mListNew.setLayoutParams(layoutParams_new);
-                mListNew.setLayoutManager(layoutManager1);
-                listNewAdapter = new ProductAdapter(listNewArr);
-                mListNew.setAdapter(listNewAdapter);
-                listNewAdapter.removeFooterLoading();
+                        listNewArr.add(listAPI.get(i));
+                    }
+                    LinearLayout.LayoutParams layoutParams_new = new LinearLayout.LayoutParams(eachItemWidth * listNewArr.size(), LinearLayout.LayoutParams.WRAP_CONTENT);
+                    mListNew.setLayoutParams(layoutParams_new);
+                    mListNew.setLayoutManager(layoutManager1);
+                    listNewAdapter = new ProductAdapter(listNewArr);
+                    mListNew.setAdapter(listNewAdapter);
+                    listNewAdapter.removeFooterLoading();
+
+
 
                 //SẢN PHẨM KHUYẾN MÃI
                 listSaleArr = listAPI;
@@ -297,10 +311,23 @@ public class HomeFragment extends Fragment{
                 ProductFragment.clickViewProduct(getActivity(), listHotAdapter,listHotArr);
                 ProductFragment.clickViewProduct(getActivity(), listSaleAdapter,list);
                 ProductFragment.clickViewProduct(getActivity(), listNewAdapter,listNewArr);
-
+                }
             }
 
+    static class SaleSorter implements Comparator<Product>
+    {
+        //sắp xếp theo giá giảm
 
+        @Override
+        public int compare(Product o1, Product o2) {
+//        return String.valueOf(o1.getId()).compareTo(String.valueOf(o2.getId()));
+            int price1 = Math.round(100 - ((Float.parseFloat(o1.getSale()) / Float.parseFloat(o1.getPrice()))*100));
+            int price2 = Math.round(100 - ((Float.parseFloat(o2.getSale()) / Float.parseFloat(o2.getPrice()))*100));
+
+            return price1 - price2;
+        }
+
+    }
 
 }
 
@@ -341,16 +368,6 @@ class LoadImage1 extends AsyncTask<String, Void, Bitmap> {
         bmImageSwitcher.setImageDrawable(drawable);
 
     }
-}
-class SaleSorter implements Comparator<Product>
-{
-    //sắp xếp theo giá giảm
-    @Override
-    public int compare(Product o1, Product o2) {
-//        return String.valueOf(o1.getId()).compareTo(String.valueOf(o2.getId()));
-        int price1 = Math.round(100 - ((Float.parseFloat(o1.getSale()) / Float.parseFloat(o1.getPrice()))*100));
-        int price2 = Math.round(100 - ((Float.parseFloat(o2.getSale()) / Float.parseFloat(o2.getPrice()))*100));
 
-        return price1 - price2;
-    }
+
 }

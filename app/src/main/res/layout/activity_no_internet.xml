@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:gravity="center"
+    tools:context=".Activities.NoInternetActivity">
+
+    <ImageView
+        android:layout_gravity="center"
+        android:id="@+id/imginternet"
+        android:src="@drawable/noiinternet"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"/>
+    <TextView
+        android:textSize="20sp"
+        android:layout_marginTop="30dp"
+        android:text="Bạn mất kết nối internet \n Vui lòng kiểm tra kết nối mạng \n Để tiếp tục sử dụng dịch vu"
+        android:layout_alignBottom="@+id/imginternet"
+        android:textAlignment="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+    <TextView
+        android:layout_marginTop="40dp"
+        android:text="Checking...."
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+    <Button
+        android:id="@+id/btnInternet"
+        android:textColor="@color/white"
+        android:layout_marginTop="20dp"
+        android:backgroundTint="@color/color_button"
+        android:text="Đã kết nối"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"/>
+</LinearLayout>

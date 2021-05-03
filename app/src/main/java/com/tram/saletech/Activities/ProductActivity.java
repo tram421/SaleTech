@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -11,10 +12,13 @@ import android.util.Log;
 
 import com.tram.saletech.API.Product;
 import com.tram.saletech.AppConstants;
+import com.tram.saletech.Fragment.ProductFragment;
+import com.tram.saletech.Interface.OnListenerToAddCart;
 import com.tram.saletech.R;
 import com.tram.saletech.RecyclerView.ProductAdapter;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 public class ProductActivity extends AppCompatActivity {
@@ -32,7 +36,6 @@ public class ProductActivity extends AppCompatActivity {
         Intent getIntent = getIntent();
         mArr = new ArrayList<>();
         int size = getIntent.getIntExtra(AppConstants.KEY_INTENT_SEND_PRODUCT_SIZE,0);
-        Log.d("BBB","kích thước: "+size);
         for (int i = 0; i < size; i++) {
             mArr.add(getIntent.getParcelableExtra(AppConstants.KEY_INTENT_SEND_PRODUCT_KEYOF_ARR + i));
         }
@@ -40,9 +43,24 @@ public class ProductActivity extends AppCompatActivity {
         mAdapter = new ProductAdapter(mArr);
         mAdapter.removeFooterLoading();
         mRecycler.setAdapter(mAdapter);
+        ProductFragment.clickViewProduct(ProductActivity.this, mAdapter,mArr);
+        ProductFragment.getProductItemToCart(true, mAdapter, mArr);
+
+    }
 
 
+    static class SaleSorter implements Comparator<Product>
+    {
+        //sắp xếp theo giá giảm
 
+        @Override
+        public int compare(Product o1, Product o2) {
+//        return String.valueOf(o1.getId()).compareTo(String.valueOf(o2.getId()));
+            int price1 = Math.round(100 - ((Float.parseFloat(o1.getSale()) / Float.parseFloat(o1.getPrice()))*100));
+            int price2 = Math.round(100 - ((Float.parseFloat(o2.getSale()) / Float.parseFloat(o2.getPrice()))*100));
+
+            return price1 - price2;
+        }
 
     }
 }
