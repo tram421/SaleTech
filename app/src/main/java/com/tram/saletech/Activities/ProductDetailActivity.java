@@ -1,6 +1,8 @@
 package com.tram.saletech.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
@@ -12,16 +14,29 @@ import android.view.View;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.tram.saletech.API.AllProduct;
 import com.tram.saletech.API.GetCart;
 import com.tram.saletech.API.LoadImage;
 import com.tram.saletech.API.Product;
 import com.tram.saletech.AppConstants;
+import com.tram.saletech.Fragment.CartFragment;
+import com.tram.saletech.Fragment.ProductFragment;
+import com.tram.saletech.Fragment.UserFragment;
+import com.tram.saletech.Interface.OnListenerToAddCart;
 import com.tram.saletech.R;
+import com.tram.saletech.RecyclerView.ProductAdapter;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL;
 
 public class ProductDetailActivity extends AppCompatActivity {
+
     WebView mWcontent;
     TextView mTxtName;
     TextView mTxtPrice;
@@ -29,6 +44,9 @@ public class ProductDetailActivity extends AppCompatActivity {
     Button mBtnAddCart;
     GetCart mGetCart;
     ImageView mImg;
+    RecyclerView mListSimilar;
+    List<Product> mArr;
+    ProductAdapter mAdapter;
     @SuppressLint({"ClickableViewAccessibility", "DefaultLocale"})
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,10 +99,56 @@ public class ProductDetailActivity extends AppCompatActivity {
                                 Toast.LENGTH_SHORT).show();
                 }
             });
+            String[] mStringSimilar = product.getSimilar().split(",");
+            if(AllProduct.getInstance().listAllProduct != null) {
+                int size = AllProduct.getInstance().listAllProduct.size();
+                if ( size > 0) {
+                    mArr = new ArrayList<>();
+                    for (int i = 0; i < mStringSimilar.length; i++) {
+                        for (int j = 0; j < size; j++) {
+                            if (mStringSimilar[i].equals(AllProduct.getInstance().listAllProduct.get(j).getId())) {
+                                mArr.add(AllProduct.getInstance().listAllProduct.get(j));
+                            }
+                        }
+                    }
+                }
+            }
+
+            mListSimilar = findViewById(R.id.listSimilar);
+            LinearLayoutManager layoutManager = new LinearLayoutManager(this, HORIZONTAL, false);
+            LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(AppConstants.WIDTH_OF_EACH_ITEM_PRODUCT * mArr.size(),
+                    LinearLayout.LayoutParams.WRAP_CONTENT);
+            mListSimilar.setLayoutManager(layoutManager);
+            mListSimilar.setLayoutParams(layoutParams);
+            mAdapter = new ProductAdapter(mArr);
+            mAdapter.removeFooterLoading();
+            mListSimilar.setAdapter(mAdapter);
+            ProductFragment.clickViewProduct(ProductDetailActivity.this, mAdapter,mArr);
+
+            ProductFragment.getProductItemToCart(true, mAdapter, mArr, ProductDetailActivity.this);
+
 
         }
 
+
+
+
+    }
+    //trước khi thoát activity thì lưu giỏ hàng lại ...vì cartfragment khi bị create sẻ get dũ liệu từ API
+    @Override
+    protected void onPause() {
+        super.onPause();
+        CartFragment.saveCartToServer(GetCart.getInstance(), UserFragment.mUserId); //lưu vào giỏ hàng online
+    }
+    //ko lưu được trong stop vì chương trình kết thúc trước khi thực hiện lệnh
+    @Override
+    protected void onStop() {
+        super.onStop();
     }
 
-
+    public void onBackPressed() {
+        Intent intent1 = new Intent(ProductDetailActivity.this, MainActivity.class);
+        startActivity(intent1);
+        super.onBackPressed();
+    }
 }

@@ -276,32 +276,39 @@ public class CartFragment extends Fragment {
     @Override
     public void onStop() {
         super.onStop();
+        saveCartToServer(mGetCart, mIdUser);
 
-        ResultAPI resultAPI = new ResultAPI();
-//        Log.d("BBB", String.valueOf(mIdUser));
-        if(mGetCart.listAllCart != null) {
-            resultAPI.insertListCartToUser(mGetCart.arrayToStringInsertAPI(mGetCart.listAllCart), mIdUser).enqueue(new Callback<String>() {
-                @Override
-                public void onResponse(Call<String> call, Response<String> response) {
-                    if(response.body().equals("SUCCESSFUL")) {
-                        Log.d("BBB","Trong Cart Fragment: Lưu cart thành công");
-                    } else {
-                        Log.d("BBB","Lỗi: trong CartFragment: Không gửi được dữ liệu lên server" + mGetCart.arrayToStringInsertAPI(mGetCart.listAllCart));
-                    }
-                }
-
-                @Override
-                public void onFailure(Call<String> call, Throwable t) {
-
-                }
-            });
-        } else {
-            Log.d("BBB","Không có gì để lưu");
-        }
 
 
     }
+    public static void saveCartToServer(GetCart mGetCart, int mIdUser)
+    {
+        ResultAPI resultAPI = new ResultAPI();
+//        Log.d("BBB", String.valueOf(mIdUser));
+        if(mGetCart.listAllCart != null) {
+            if(mGetCart.listAllCart.size() > 0 ) {
+                resultAPI.insertListCartToUser(mGetCart.arrayToStringInsertAPI(mGetCart.listAllCart), mIdUser).enqueue(new Callback<String>() {
+                    @Override
+                    public void onResponse(Call<String> call, Response<String> response) {
+                        if(response.body().equals("SUCCESSFUL")) {
+                            Log.d("BBB","Trong Cart Fragment: Lưu cart thành công");
+                        } else {
+                            Log.d("BBB","Lỗi: trong CartFragment: Không gửi được dữ liệu lên server");
+                        }
+                    }
 
+                    @Override
+                    public void onFailure(Call<String> call, Throwable t) {
+
+                    }
+                });
+            }
+
+
+        } else {
+            Log.d("BBB","Không có gì để lưu");
+        }
+    }
 
 
     @Override
@@ -399,7 +406,7 @@ public class CartFragment extends Fragment {
                                             }
                                         });
                             } else {
-                                Log.d("BBB","Trong CartFragment: Chưa có dữ liệu trong giỏ");
+                                Log.d("BBB","Trong CartFragment: Chưa có dữ liệu trong giỏ - begin");
                             }
 
 

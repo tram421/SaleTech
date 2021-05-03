@@ -61,10 +61,19 @@ public class GetCart {
 
     public String arrayToStringInsertAPI(List<String[]> arr)
     {
+
         String str = "";
-        if ( arr.size() > 0 ) {
+        if ( arr.size() > 0) {
             for (int i = 0; i < arr.size(); i++) {
-                str += (i == 0) ? arr.get(i)[0] + "of" + arr.get(i)[1] : "," + arr.get(i)[0] + "of" + arr.get(i)[1];
+                if(arr.size() > i)
+                    try {
+                        str += (i == 0) ? arr.get(i)[0] + "of" + arr.get(i)[1] : "," + arr.get(i)[0] + "of" + arr.get(i)[1];
+                    } catch (Exception e) {
+                        Log.d("BBB","Lỗi trong GetCart" + e.getMessage());
+                        str = "0of0";
+
+                    }
+
             }
         }
         return str;

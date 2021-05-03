@@ -63,7 +63,7 @@ public class UserFragment extends Fragment {
     public static final String STATE = "logout";
     public static final String ID_USER = "idUser";
     String state;
-    static Integer mUserId;
+    public static Integer mUserId;
     String mFullNameUser;
     String mAdressUser;
     String mPhoneUser;
@@ -311,13 +311,16 @@ public class UserFragment extends Fragment {
                 resultAPI.resultUserAPI(idUser).enqueue(new Callback<List<User>>() {
                     @Override
                     public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                        mFullNameUser = response.body().get(0).getName();
-                        mAdressUser = response.body().get(0).getAddress();
-                        mPhoneUser = response.body().get(0).getPhone();
-                        mIdproduct = response.body().get(0).getIdproduct();
+                        if (response.body().size() >0 ) {
+                            mFullNameUser = response.body().get(0).getName();
+                            mAdressUser = response.body().get(0).getAddress();
+                            mPhoneUser = response.body().get(0).getPhone();
+                            mIdproduct = response.body().get(0).getIdproduct();
 //                mIdVoucher = Integer.parseInt(String.valueOf(response.body().get(0).getIdVoucher()));
 //                mIdOrder = Integer.parseInt(String.valueOf(response.body().get(0).getIdOrder()));
-                        sendDatatoCartFragment();
+                            sendDatatoCartFragment();
+                        }
+
                     }
                     @Override
                     public void onFailure(Call<List<User>> call, Throwable t) {

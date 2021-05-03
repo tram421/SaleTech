@@ -30,6 +30,7 @@ import android.webkit.WebView;
 import android.widget.ImageSwitcher;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
 import com.tram.saletech.API.AllProduct;
@@ -54,7 +55,7 @@ public class HomeFragment extends Fragment{
     RecyclerView mListHot, mListNew, mListSale;
     List<Product> mListProductAPI;
     LinearLayout mCatTivi, mCatMayGiat, mCatTulanh, mCatGiadung;
-    int eachItemWidth = 430;
+
     ImageSwitcher mBanner;
     String[] mArrImages = {
             "http://maitram.net/api/image/banner1.jpg",
@@ -268,7 +269,8 @@ public class HomeFragment extends Fragment{
                         listHotArr.add(listAPI.get(i));
                     }
                 }
-                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(eachItemWidth * listHotArr.size(), LinearLayout.LayoutParams.WRAP_CONTENT);
+                LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(AppConstants.WIDTH_OF_EACH_ITEM_PRODUCT * listHotArr.size(),
+                        LinearLayout.LayoutParams.WRAP_CONTENT);
                 mListHot.setLayoutParams(layoutParams);
                 mListHot.setLayoutManager(layoutManager);
                 listHotAdapter = new ProductAdapter(listHotArr);
@@ -280,7 +282,8 @@ public class HomeFragment extends Fragment{
 
                         listNewArr.add(listAPI.get(i));
                     }
-                    LinearLayout.LayoutParams layoutParams_new = new LinearLayout.LayoutParams(eachItemWidth * listNewArr.size(), LinearLayout.LayoutParams.WRAP_CONTENT);
+                    LinearLayout.LayoutParams layoutParams_new = new LinearLayout.LayoutParams(AppConstants.WIDTH_OF_EACH_ITEM_PRODUCT * listNewArr.size(),
+                            LinearLayout.LayoutParams.WRAP_CONTENT);
                     mListNew.setLayoutParams(layoutParams_new);
                     mListNew.setLayoutManager(layoutManager1);
                     listNewAdapter = new ProductAdapter(listNewArr);
@@ -303,11 +306,9 @@ public class HomeFragment extends Fragment{
                 mListSale.setLayoutManager(layoutManager2);
                 mListSale.setAdapter(listSaleAdapter);
                 listSaleAdapter.removeFooterLoading();
-
-
-                ProductFragment.getProductItemToCart(true, listHotAdapter, listHotArr);
-                ProductFragment.getProductItemToCart(true, listSaleAdapter, list);
-                ProductFragment.getProductItemToCart(true, listNewAdapter, listNewArr);
+                ProductFragment.getProductItemToCart(true, listHotAdapter, listHotArr, getActivity());
+                ProductFragment.getProductItemToCart(true, listSaleAdapter, list, getActivity());
+                ProductFragment.getProductItemToCart(true, listNewAdapter, listNewArr, getActivity());
                 ProductFragment.clickViewProduct(getActivity(), listHotAdapter,listHotArr);
                 ProductFragment.clickViewProduct(getActivity(), listSaleAdapter,list);
                 ProductFragment.clickViewProduct(getActivity(), listNewAdapter,listNewArr);

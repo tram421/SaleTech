@@ -1,5 +1,6 @@
 package com.tram.saletech.Navigation;
 
+import android.util.Log;
 import android.view.MenuItem;
 
 import com.google.android.material.bottomnavigation.BottomNavigationView;
@@ -84,8 +85,13 @@ public class Navigation {
     }
 
     public void pressBackNavigation(){
+        try {
+            this.mViewPager.setCurrentItem(0);
+        } catch (Exception e) {
+            Log.d("BBB","Lỗi trong Navigation: " + e.getMessage());
 
-        this.mViewPager.setCurrentItem(0);
+        }
+
 
     }
 

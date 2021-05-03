@@ -25,25 +25,31 @@ public class BroadcastInternet extends BroadcastReceiver {
             if (intent.getBooleanExtra(WifiManager.EXTRA_SUPPLICANT_CONNECTED, false)) {
                 //do stuff
                 Toast.makeText(context, "Đã có kết nối", Toast.LENGTH_SHORT).show();
-//                new CountDownTimer(30000, 1000) {
-//                    public void onFinish() {
-//                        Intent intent1 = new Intent(context, MainActivity.class);
-//                        context.startActivity(intent1);
-//                    }
-//
-//                    public void onTick(long millisUntilFinished) {
-//                        // millisUntilFinished    The amount of time until finished.
-//                        Toast.makeText(context, "Đang chờ kết nối lại...", Toast.LENGTH_SHORT).show();
-//                    }
-//                }.start();
+                new CountDownTimer(10000, 1000) {
+                    public void onFinish() {
+                        if(MainActivity.active == false) {
+                            Intent intent1 = new Intent(context, MainActivity.class);
+                            context.startActivity(intent1);
+                        }
+
+                    }
+
+                    public void onTick(long millisUntilFinished) {
+                        // millisUntilFinished    The amount of time until finished.
+                        Toast.makeText(context, "Đang chờ kết nối lại...", Toast.LENGTH_SHORT).show();
+                    }
+                }.start();
 
 
 
 
 
             } else {
+                MainActivity.active = false;
                 // wifi connection was lost
                 Toast.makeText(context, "Mất kết nối", Toast.LENGTH_SHORT).show();
+                Intent intent2 = new Intent(context, NoInternetActivity.class);
+                context.startActivity(intent2);
             }
         }
     }

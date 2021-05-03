@@ -9,11 +9,13 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.tram.saletech.API.Product;
 import com.tram.saletech.AppConstants;
 import com.tram.saletech.Fragment.ProductFragment;
 import com.tram.saletech.Interface.OnListenerToAddCart;
+import com.tram.saletech.Navigation.Navigation;
 import com.tram.saletech.R;
 import com.tram.saletech.RecyclerView.ProductAdapter;
 
@@ -25,6 +27,9 @@ public class ProductActivity extends AppCompatActivity {
     ProductAdapter mAdapter;
     List<Product> mArr;
     RecyclerView mRecycler;
+    Navigation mNavigation = new Navigation();
+    int mPressBackCount = 0;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -44,7 +49,7 @@ public class ProductActivity extends AppCompatActivity {
         mAdapter.removeFooterLoading();
         mRecycler.setAdapter(mAdapter);
         ProductFragment.clickViewProduct(ProductActivity.this, mAdapter,mArr);
-        ProductFragment.getProductItemToCart(true, mAdapter, mArr);
+        ProductFragment.getProductItemToCart(true, mAdapter, mArr, ProductActivity.this);
 
     }
 
@@ -62,5 +67,10 @@ public class ProductActivity extends AppCompatActivity {
             return price1 - price2;
         }
 
+    }
+    public void onBackPressed() {
+        Intent intent1 = new Intent(ProductActivity.this, MainActivity.class);
+        startActivity(intent1);
+        super.onBackPressed();
     }
 }

@@ -196,7 +196,7 @@ public class ProductFragment extends Fragment {
             }
         });
     }
-    public static String getProductItemToCart(Boolean flag, ProductAdapter adapter, List<Product> arr)
+    public static String getProductItemToCart(Boolean flag, ProductAdapter adapter, List<Product> arr, Context context)
     {
         String result;
         if (flag) {
@@ -204,17 +204,27 @@ public class ProductFragment extends Fragment {
             adapter.setOnItemAddToCart(new OnListenerToAddCart() {
                     @Override
                     public void onClick(int postiton) {
-                        if(mGetCart.listAllCart != null) {
+                        if(mGetCart.listAllCart != null && mGetCart.listAllCart.size() > 0) {
                             boolean flagEnter = false;
                             if(arr != null && arr.size() > postiton) {
-                                try {
+
                                     int id = Integer.parseInt(arr.get(postiton).getId());
 
 //                            if (mGetCart.listAllCart.size() > 0) {
-                                for (int i = 0; i < mGetCart.listAllCart.size(); i++) {
-                                    if (id == Integer.parseInt(mGetCart.listAllCart.get(i)[0])) {
 
-                                        int quantity = Integer.parseInt(mGetCart.listAllCart.get(i)[1]) + 1;
+                                for (int i = 0; i < mGetCart.listAllCart.size(); i++) {
+
+                                    int temp = 0; //lấy dữ liêu trên database để vào biến tạm
+                                    int quantity = 0;
+                                    if(mGetCart.listAllCart.get(i)[0].equals("")) { //nếu giỏ hàng trống trên database sẽ trả về ""
+                                        temp = 0;
+
+                                    } else {
+                                        temp = Integer.parseInt(mGetCart.listAllCart.get(i)[0]);
+
+                                    }
+                                    quantity = Integer.parseInt(mGetCart.listAllCart.get(i)[1]) + 1;
+                                    if (id == temp) {
                                         String[] st = {
                                                 String.valueOf(id),
                                                 String.valueOf(quantity)
@@ -222,17 +232,23 @@ public class ProductFragment extends Fragment {
                                         mGetCart.listAllCart.add(st);
                                         mGetCart.listAllCart = mGetCart.remove(i, mGetCart.listAllCart);
                                         flagEnter = true; //tìm thấy sản phẩm
+                                        Toast.makeText(context, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
                                         break; //tim thay thi ko loop nua
 
                                     }
 
                                 }
+                                try {
                                 if (!flagEnter) { //nếu không có sp trùng
                                     String[] st = {
                                             String.valueOf(id),
                                             String.valueOf(1)
                                     };
                                     mGetCart.listAllCart.add(st);
+                                    Toast.makeText(context, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
+                                    for (int i = 0; i < mGetCart.listAllCart.size(); i++) {
+                                        Log.d("BBB","Sản phẩm trong giỏ:" + mGetCart.listAllCart.get(i)[0]);
+                                    }
                                 }
                                 Log.d("BBB","Thêm sản phẩm thành công");
 
@@ -240,9 +256,10 @@ public class ProductFragment extends Fragment {
 //                                Toast Thành công
 //                            }
                                 } catch (Exception e) {
-                                    Log.d("BBB","Lỗi trong ProductFragment: " + e.getMessage());
+                                    Log.d("BBB","(333)Lỗi trong ProductFragment: " + e.getMessage());
                                 }
                             }
+
 
 
 
@@ -269,7 +286,7 @@ public class ProductFragment extends Fragment {
                 @Override
                 public void run() {
                     try {
-                        getProductItemToCart(flag, adapter, arr);
+                        getProductItemToCart(flag, adapter, arr, context);
 
                     } catch (Exception e) {
                         Log.d("BBB","Lỗi trong ProductFragment: " + e.getMessage());
@@ -319,7 +336,7 @@ public class ProductFragment extends Fragment {
                     loadNextPage();
                     clickViewProduct(getActivity(), mAdapter, mArr);
                     try {
-                        getProductItemToCart(flagRunFinish, mAdapter, mArr);
+                        getProductItemToCart(flagRunFinish, mAdapter, mArr, getActivity());
 
                     } catch (Exception e) {
                         Log.d("BBB","(111) Lỗi trong ProductFragment: " + e.getMessage());
@@ -351,7 +368,7 @@ public class ProductFragment extends Fragment {
             }
         }
         try {
-            getProductItemToCart(flagRunFinish, mAdapter, mArr);
+            getProductItemToCart(flagRunFinish, mAdapter, mArr, getActivity());
             clickViewProduct(getActivity(),mAdapter, mArr);
         } catch (Exception e) {
             Log.d("BBB","(222) Lỗi trong ProductFragment: " + e.getMessage());
@@ -440,7 +457,7 @@ public class ProductFragment extends Fragment {
                     mAdapter.removeFooterLoading();
                 }
             }
-        },2000);
+        },1000);
 
     }
     private  List<Product> startReadAPI(){

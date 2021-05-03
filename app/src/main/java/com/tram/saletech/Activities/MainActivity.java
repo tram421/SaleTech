@@ -62,7 +62,7 @@ public class MainActivity extends AppCompatActivity{
     public String getGet() {
         return get;
     }
-
+    public static boolean active = false;
     //    SendData sendData;
     String mData;
     int mPressBackCount = 0;
@@ -92,15 +92,11 @@ public class MainActivity extends AppCompatActivity{
         }
         else
             connected = false;
-
         if (!connected) {
+            active = false;
             Intent intent = new Intent(MainActivity.this, NoInternetActivity.class);
             startActivity(intent);
             super.onStop();
-
-
-
-
 
         }
 
@@ -111,11 +107,8 @@ public class MainActivity extends AppCompatActivity{
         filter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
         registerReceiver(mMyBroadCast, filter);
         //check internet
-
-
-
         setContentView(R.layout.activity_main);
-
+        active = true;
 
 //        public void sendDataToActivity()
 //    {
