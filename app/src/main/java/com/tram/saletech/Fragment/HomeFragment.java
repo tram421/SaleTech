@@ -15,6 +15,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -33,6 +34,13 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import android.widget.ViewSwitcher;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.tram.saletech.API.AllProduct;
 import com.tram.saletech.API.GetProductFromAPI;
 import com.tram.saletech.API.Product;
@@ -51,7 +59,9 @@ import java.util.List;
 import static androidx.recyclerview.widget.LinearLayoutManager.HORIZONTAL;
 
 
-public class HomeFragment extends Fragment{
+public class HomeFragment extends Fragment  implements OnMapReadyCallback {
+    private GoogleMap gm;
+    private SupportMapFragment fragment;
     RecyclerView mListHot, mListNew, mListSale;
     List<Product> mListProductAPI;
     LinearLayout mCatTivi, mCatMayGiat, mCatTulanh, mCatGiadung;
@@ -155,7 +165,7 @@ public class HomeFragment extends Fragment{
         mCatMayGiat = view.findViewById(R.id.catMayGiat);
         mCatTulanh = view.findViewById(R.id.catTulanh);
         mCatGiadung = view.findViewById(R.id.catGiadung);
-
+        createMap();
         return view;
     }
 
@@ -192,10 +202,10 @@ public class HomeFragment extends Fragment{
 
     }
 
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-    }
+//    @Override
+//    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+//        super.onActivityCreated(savedInstanceState);
+//    }
 
     @Override
     public void onStart() {
@@ -216,7 +226,7 @@ public class HomeFragment extends Fragment{
     @Override
     public void onResume() {
         super.onResume();
-
+        createMap();
 
 
 
@@ -315,6 +325,8 @@ public class HomeFragment extends Fragment{
                 }
             }
 
+
+
     static class SaleSorter implements Comparator<Product>
     {
         //sắp xếp theo giá giảm
@@ -330,45 +342,71 @@ public class HomeFragment extends Fragment{
 
     }
 
-}
+    class LoadImage1 extends AsyncTask<String, Void, Bitmap> {
+        ImageSwitcher bmImageSwitcher;
 
-class DataMock{
-    public List<Product> getMock(){
-        List<Product> listMock = new ArrayList<>();
-        listMock.add(new Product("1","Tên sản phẩm","api/image/tv02.jpg","2000","2000","Tram","Tram","Tram","Tram",1,0));
-        listMock.add(new Product("2","Tên sản phẩm", "api/image/tv03.jpg","20000","2000","Tram","Tram","Tram","Tram",0,0));
-        listMock.add(new Product("3","Tên sản phẩm", "api/image/tv04.jpg","20000","2000","Tram","Tram","Tram","Tram",0,0));
-        listMock.add(new Product("4","Tên sản phẩm","api/image/tv01.jpg","2000","2000","Tram","Tram","Tram","Tram",1,0));
-        listMock.add(new Product("5","Tên sản phẩm", "api/image/tv02.jpg","20000","2000","Tram","Tram","Tram","Tram",1,0));
-        listMock.add(new Product("6","Tram5", "api/image/tv01.jpg","20000","2000","Tram","Tram","Tram","Tram",0,0));
-
-        return listMock;
-    }
-}
-
-class LoadImage1 extends AsyncTask<String, Void, Bitmap> {
-    ImageSwitcher bmImageSwitcher;
-
-    public LoadImage1(ImageSwitcher bmImage) {
-        this.bmImageSwitcher = bmImage;
-    }
-    protected Bitmap doInBackground(String... urls) {
-        String urlOfImage = urls[0];
-        Bitmap mIcon11 = null;
-        try {
-            InputStream in = new java.net.URL(urlOfImage).openStream();
-            mIcon11 = BitmapFactory.decodeStream(in);
-        } catch (Exception e) {
-            Log.e("Error", e.getMessage());
-            e.printStackTrace();
+        public LoadImage1(ImageSwitcher bmImage) {
+            this.bmImageSwitcher = bmImage;
         }
-        return mIcon11;
-    }
-    protected void onPostExecute(Bitmap result) {
-        Drawable drawable =new BitmapDrawable(result);
-        bmImageSwitcher.setImageDrawable(drawable);
+        protected Bitmap doInBackground(String... urls) {
+            String urlOfImage = urls[0];
+            Bitmap mIcon11 = null;
+            try {
+                InputStream in = new java.net.URL(urlOfImage).openStream();
+                mIcon11 = BitmapFactory.decodeStream(in);
+            } catch (Exception e) {
+                Log.e("Error", e.getMessage());
+                e.printStackTrace();
+            }
+            return mIcon11;
+        }
+        protected void onPostExecute(Bitmap result) {
+            Drawable drawable =new BitmapDrawable(result);
+            bmImageSwitcher.setImageDrawable(drawable);
+
+        }
+
 
     }
-
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        FragmentManager fm = getChildFragmentManager();
+        fragment = (SupportMapFragment) fm.findFragmentById(R.id.map);
+        if (fragment == null) {
+            fragment = SupportMapFragment.newInstance();
+            fm.beginTransaction().replace(R.id.map, fragment).commit();
+        }
+    }
+    private void createMap() {
+//        SupportMapFragment smf = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map));
+        SupportMapFragment smf = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
+//        smf.getMapAsync(this);
+        smf.getMapAsync(this::onMapReady);
+    }
+    @Override
+    public void onMapReady(GoogleMap googleMap) {
+        LatLng mekolink = new LatLng(9.957524370109264, 105.73425114151195); //9.957524370109264, 105.73425114151195
+        gm = googleMap;
+        gm.addMarker(new MarkerOptions().position(mekolink).title("Bách hóa Mekolink"));
+        CameraPosition cp = new CameraPosition.Builder().target(mekolink).zoom(12).build();
+        gm.animateCamera(CameraUpdateFactory.newCameraPosition(cp));
+    }
 
 }
+
+//class DataMock{
+//    public List<Product> getMock(){
+//        List<Product> listMock = new ArrayList<>();
+//        listMock.add(new Product("1","Tên sản phẩm","api/image/tv02.jpg","2000","2000","Tram","Tram","Tram","Tram",1,0));
+//        listMock.add(new Product("2","Tên sản phẩm", "api/image/tv03.jpg","20000","2000","Tram","Tram","Tram","Tram",0,0));
+//        listMock.add(new Product("3","Tên sản phẩm", "api/image/tv04.jpg","20000","2000","Tram","Tram","Tram","Tram",0,0));
+//        listMock.add(new Product("4","Tên sản phẩm","api/image/tv01.jpg","2000","2000","Tram","Tram","Tram","Tram",1,0));
+//        listMock.add(new Product("5","Tên sản phẩm", "api/image/tv02.jpg","20000","2000","Tram","Tram","Tram","Tram",1,0));
+//        listMock.add(new Product("6","Tram5", "api/image/tv01.jpg","20000","2000","Tram","Tram","Tram","Tram",0,0));
+//
+//        return listMock;
+//    }
+//}
+
+

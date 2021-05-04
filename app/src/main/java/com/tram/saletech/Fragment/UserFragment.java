@@ -134,8 +134,8 @@ public class UserFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_user, container, false);
         mapping(view);
         //Format
-        String signup = mSignUp.getText().toString();
-        mSignUp.setText((Html.fromHtml("<u>"+ signup + "</u>" ))); //tạo text underline
+//        String signup = mSignUp.getText().toString();
+//        mSignUp.setText((Html.fromHtml("<u>"+ signup + "</u>" ))); //tạo text underline
         mArr = new ArrayList<>();
         mAdapter = new OrderAdapter(mArr);
         loadPreferences();
@@ -289,7 +289,7 @@ public class UserFragment extends Fragment {
     }
     private void mapping(View view)
     {
-        mSignUp = view.findViewById(R.id.signup);
+//        mSignUp = view.findViewById(R.id.signup);
         mEdtUser = view.findViewById(R.id.user);
         mEdtPass = view.findViewById(R.id.password);
         mBtnLogin = view.findViewById(R.id.login);
@@ -352,15 +352,17 @@ public class UserFragment extends Fragment {
                             mAdapter = new OrderAdapter(mArr);
                             mAdapter.notifyDataSetChanged();
                             mRecyclerViewOrder.setAdapter(mAdapter);
-                            Log.d("BBB","set lai adapter");
                         }
-
 
                     }
 
                     @Override
                     public void onFailure(Call<List<Order>> call, Throwable t) {
+                        mArr = new ArrayList<>(); //nếu lỗi thì set bằng 0 vì ko có dữ liệu trả về
+                        mAdapter.notifyDataSetChanged();
+                        mRecyclerViewOrder.setAdapter(mAdapter);
                         Log.d("BBB", "(444) Lỗi trong UserFragment" + t.getMessage());
+
                     }
                 });
             }

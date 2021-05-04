@@ -69,4 +69,5 @@
         app:itemTextColor="@color/custom_color_bottom_nav"
         app:backgroundTint="@color/color_main"/>
 
+
 </androidx.constraintlayout.widget.ConstraintLayout>

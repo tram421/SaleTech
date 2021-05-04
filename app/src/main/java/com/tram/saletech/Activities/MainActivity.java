@@ -10,6 +10,7 @@
 package com.tram.saletech.Activities;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.FragmentStatePagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -28,6 +29,14 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.MapFragment;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.tram.saletech.API.GetCart;
 import com.tram.saletech.BroadcastInternet;
@@ -36,10 +45,12 @@ import com.tram.saletech.Fragment.ProductFragment;
 import com.tram.saletech.Navigation.ViewPagerAdapter;
 import com.tram.saletech.R;
 import com.tram.saletech.Navigation.Navigation;
+import com.tram.saletech.Service.GetDataService;
 
 import static android.text.TextUtils.isEmpty;
 
-public class MainActivity extends AppCompatActivity{
+public class MainActivity extends AppCompatActivity {
+    private GoogleMap gm;
     private BroadcastInternet mMyBroadCast;
     ViewPager mViewPager;
     BottomNavigationView bottomNavigationView;
@@ -116,7 +127,11 @@ public class MainActivity extends AppCompatActivity{
 //            String string = mInputSearch.getText().toString().trim();
 ////            iSendData.send_from_HomeFragment(string);
 //        }
-
+        //start service
+        Intent intent = new Intent(MainActivity.this, GetDataService.class);
+        intent.putExtra("chuoi", "123");
+        startService(intent);
+//        ContextCompat.startForegroundService(MainActivity.this, intent);
 
     }
 
@@ -199,6 +214,13 @@ public class MainActivity extends AppCompatActivity{
         return productFragment;
     }
 
+
+    @Override
+    public void onPointerCaptureChanged(boolean hasCapture) {
+
+    }
+
+
 //    @Override
 //    public void sendString(String string) {
 //        Intent intent = new Intent(MainActivity.this, ProductActivity.class);
@@ -206,5 +228,6 @@ public class MainActivity extends AppCompatActivity{
 //        startActivity(intent);
 //
 //    }
+
 
 }

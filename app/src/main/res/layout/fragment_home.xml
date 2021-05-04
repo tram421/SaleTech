@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     tools:context=".Fragment.HomeFragment"
-    >
+    android:id="@+id/map_container">
 
     <ScrollView
         android:layout_width="match_parent"
@@ -236,15 +236,56 @@
             </LinearLayout>
 
 <!--            Thông tin-->
+            <View
+                android:background="@color/color_main"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"/>
             <WebView
+                android:layout_margin="15dp"
+                android:padding="20dp"
                 android:id="@+id/footerContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 tools:ignore="WebViewLayout" />
 
+            <LinearLayout
+                android:orientation="vertical"
+                android:layout_margin="25dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:textColor="@color/black"
+                    android:textSize="22sp"
+                    android:text="Bản đồ"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+                <fragment
+                    android:layout_marginTop="10dp"
+                    class="com.google.android.gms.maps.SupportMapFragment"
+                    android:id="@+id/map"
+                    android:layout_width="match_parent"
+                    android:layout_height="500dp" />
+            </LinearLayout>
+
+            <View
+                android:background="@color/color_main"
+                android:layout_width="match_parent"
+                android:layout_height="20dp"/>
+            <ImageView
+                android:id="@+id/logo"
+                android:layout_gravity="center"
+                android:src="@drawable/logo"
+                android:layout_width="100dp"
+                android:layout_height="100dp" />
+
         </LinearLayout>
 
+
     </ScrollView>
+
+
+
+
 
 
 </LinearLayout>
