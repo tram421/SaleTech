@@ -27,8 +27,6 @@ public class ProductActivity extends AppCompatActivity {
     ProductAdapter mAdapter;
     List<Product> mArr;
     RecyclerView mRecycler;
-    Navigation mNavigation = new Navigation();
-    int mPressBackCount = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
