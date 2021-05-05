@@ -76,7 +76,6 @@ public class HomeFragment extends Fragment  implements OnMapReadyCallback {
     boolean mIsStarted = false;
     int mCount = 0;
     MainActivity mainActivity;
-//    private  SendData iSendData;
 
     public HomeFragment() {
         // Required empty public constructor
@@ -92,26 +91,29 @@ public class HomeFragment extends Fragment  implements OnMapReadyCallback {
     @Override
     public void onAttach(@NonNull Context context) {
         super.onAttach(context);
+        //Gọi từ khi vừa khởi động
         mListProductAPI = new GetProductFromAPI().startReadAPI();
-
-
-
+    }
+    @Override
+    public void onActivityCreated(Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+        FragmentManager fm = getChildFragmentManager();
+        fragment = (SupportMapFragment) fm.findFragmentById(R.id.map);
+        if (fragment == null) {
+            fragment = SupportMapFragment.newInstance();
+            fm.beginTransaction().replace(R.id.map, fragment).commit();
+        }
     }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_home, container, false);
-
-
-
-
         mainActivity = (MainActivity) getActivity();
         new Handler().postDelayed(new Runnable() {
             @Override
             public void run() {
                 initRecyclerViews(view, mListProductAPI);
-
             }
         },1000);
 
@@ -157,9 +159,7 @@ public class HomeFragment extends Fragment  implements OnMapReadyCallback {
         view.setVerticalScrollBarEnabled(false);
 
         view1.loadData(getString(R.string.hello), "text/html; charset=utf-8", "utf-8");
-//        ((LinearLayout)view.findViewById(R.id.footerContent)).addView(view);
-//
-//        view.loadData(getString(R.string.hello), "text/html; charset=utf-8", "utf-8");
+
         mAllProduct = AllProduct.getInstance();
         mCatTivi = view.findViewById(R.id.catTivi);
         mCatMayGiat = view.findViewById(R.id.catMayGiat);
@@ -196,40 +196,13 @@ public class HomeFragment extends Fragment  implements OnMapReadyCallback {
                 getCat(4);
             }
         });
-
-
-
-
     }
 
-//    @Override
-//    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-//        super.onActivityCreated(savedInstanceState);
-//    }
-
-    @Override
-    public void onStart() {
-//        getSearchInput();
-//        Log.d("BBB",mainActivity.getSend());
-//        mainActivity.setGet("Tr get get");
-//        sendDataToActivity();
-//        String receive_fragment = mainActivity.mHomeFragment.getArguments().getString("Send_fragment");
-//        Log.d("BBB","Tu home fragment nhan du lieu tu Main: " + receive_fragment);
-
-
-        super.onStart();
-
-
-
-    }
 
     @Override
     public void onResume() {
         super.onResume();
         createMap();
-
-
-
     }
 
     private void getCat(int idCat)
@@ -336,10 +309,8 @@ public class HomeFragment extends Fragment  implements OnMapReadyCallback {
 //        return String.valueOf(o1.getId()).compareTo(String.valueOf(o2.getId()));
             int price1 = Math.round(100 - ((Float.parseFloat(o1.getSale()) / Float.parseFloat(o1.getPrice()))*100));
             int price2 = Math.round(100 - ((Float.parseFloat(o2.getSale()) / Float.parseFloat(o2.getPrice()))*100));
-
             return price1 - price2;
         }
-
     }
 
     class LoadImage1 extends AsyncTask<String, Void, Bitmap> {
@@ -363,25 +334,11 @@ public class HomeFragment extends Fragment  implements OnMapReadyCallback {
         protected void onPostExecute(Bitmap result) {
             Drawable drawable =new BitmapDrawable(result);
             bmImageSwitcher.setImageDrawable(drawable);
-
-        }
-
-
-    }
-    @Override
-    public void onActivityCreated(Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        FragmentManager fm = getChildFragmentManager();
-        fragment = (SupportMapFragment) fm.findFragmentById(R.id.map);
-        if (fragment == null) {
-            fragment = SupportMapFragment.newInstance();
-            fm.beginTransaction().replace(R.id.map, fragment).commit();
         }
     }
+
     private void createMap() {
-//        SupportMapFragment smf = ((SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map));
         SupportMapFragment smf = (SupportMapFragment) getChildFragmentManager().findFragmentById(R.id.map);
-//        smf.getMapAsync(this);
         smf.getMapAsync(this::onMapReady);
     }
     @Override
@@ -395,18 +352,5 @@ public class HomeFragment extends Fragment  implements OnMapReadyCallback {
 
 }
 
-//class DataMock{
-//    public List<Product> getMock(){
-//        List<Product> listMock = new ArrayList<>();
-//        listMock.add(new Product("1","Tên sản phẩm","api/image/tv02.jpg","2000","2000","Tram","Tram","Tram","Tram",1,0));
-//        listMock.add(new Product("2","Tên sản phẩm", "api/image/tv03.jpg","20000","2000","Tram","Tram","Tram","Tram",0,0));
-//        listMock.add(new Product("3","Tên sản phẩm", "api/image/tv04.jpg","20000","2000","Tram","Tram","Tram","Tram",0,0));
-//        listMock.add(new Product("4","Tên sản phẩm","api/image/tv01.jpg","2000","2000","Tram","Tram","Tram","Tram",1,0));
-//        listMock.add(new Product("5","Tên sản phẩm", "api/image/tv02.jpg","20000","2000","Tram","Tram","Tram","Tram",1,0));
-//        listMock.add(new Product("6","Tram5", "api/image/tv01.jpg","20000","2000","Tram","Tram","Tram","Tram",0,0));
-//
-//        return listMock;
-//    }
-//}
 
 

@@ -44,11 +44,6 @@ import java.util.regex.Pattern;
 
 import static android.text.TextUtils.isEmpty;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ProductFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ProductFragment extends Fragment {
     RecyclerView mRecyclerView;
     List<Product> mArr = new ArrayList<>();
@@ -58,13 +53,7 @@ public class ProductFragment extends Fragment {
     MainActivity mainActivity;
     public String mSearch;
     Boolean flagRunFinish = false;
-    OnListenerToAddCart onListenerToAddCart;
     AllProduct mAllProduct;
-//    public interface ReceiveData{
-//        public void data(String data);
-//    }
-
-    //    ReceiveData receiveData;
 
     private boolean isLoading = false;
     private boolean isLastpage = false;
@@ -74,12 +63,7 @@ public class ProductFragment extends Fragment {
     private int totalItem = 0;
     private boolean mFlag = false;
     private boolean flagLoadmore = true;
-    public static final String CART = "cart";
-    public static final String CART_ADDED = "product_in_cart";
 
-    MyFlag myFlagAPI = new MyFlag(0);
-
-    //    CallAPIService mCallAPIProduct;
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -93,32 +77,12 @@ public class ProductFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ProductFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ProductFragment newInstance(String param1, String param2) {
-
-        ProductFragment fragment = new ProductFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
-
         }
     }
 
@@ -152,38 +116,85 @@ public class ProductFragment extends Fragment {
         mainActivity = (MainActivity) getActivity();
         totalPage = (int)Math.ceil((double)mListAPI.size()/(double)itemEachPage);
         totalItem = mListAPI.size();
-
-
         mSearchContent = v.findViewById(R.id.searchContent);
         mRecyclerView = v.findViewById(R.id.recyclerViewProduct);
-
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2);
         mRecyclerView.setLayoutManager(layoutManager);
         setFirstData();
-
         mAdapter = new ProductAdapter(mArr);
         mRecyclerView.setAdapter(mAdapter);
-
-
         return v;
     }
 
+    //gọi mỗi khi mở sang tab product
     @Override
-    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
-        super.onViewCreated(view, savedInstanceState);
+    public void onResume() {
         GetCart mGetCart = GetCart.getInstance();
 
+        super.onResume();
+
+        //gán lại cờ cho resume khi trang được quay lại mà ko có từ khóa search...cho phép loadmore
+        mSearch = "";
+        if(isEmpty(mainActivity.mInputSearch.getText())){
+            //tra ve tong so trang
+            totalPage = (int)Math.ceil((double)mListAPI.size()/(double)itemEachPage);
+            mSearchContent.setText("");
+            currentPage = 1;
+            flagLoadmore = true;
+            this.isLoading = false;
+            this.isLastpage = false;
+            GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2);
+            mRecyclerView.setLayoutManager(layoutManager);
+            mAdapter = new ProductAdapter(mArr);
+            mRecyclerView.setAdapter(mAdapter);
+            setFirstData();
+            flagRunFinish = true; //chạy xong recycler ,  khi mở app lần đầu cung chạy xong flag này
+            //cuộn trang để load more
+            mRecyclerView.addOnScrollListener(new PaginationScrollListener(layoutManager, mListAPI, currentPage, flagLoadmore) {
+                @Override
+                public void loadMoreItem() {
+                    isLoading = true;
+                    currentPage += 1;
+                    loadNextPage();
+                    clickViewProduct(getActivity(), mAdapter, mArr);
+                    try {
+                        getProductItemToCart(flagRunFinish, mAdapter, mArr, getActivity());
+
+                    } catch (Exception e) {
+                        Log.d("BBB","(111) Lỗi trong ProductFragment: " + e.getMessage());
+                    }
+                }
+                @Override
+                public boolean isLoading() {
+                    return isLoading;
+                }
+                @Override
+                public boolean isLastPage() {
+                    if(currentPage >= totalPage){
+                        mAdapter.removeFooterLoading();
+                    }
+                    return isLastpage;
+                }
+            });
+        } else { //chuyển tab mà có dữ liệu trong input text
+            if(mainActivity.mProductFragment.getArguments() != null){
+                mSearch = mainActivity.mProductFragment.getArguments().getString("Send_fragment");
+                if(mSearch != null){
+                    mSearchContent.setText("Kết quả tìm kiểm của: " + mSearch);
+                    flagLoadmore = false;
+                    loadData(mSearch);
+                }
+            }
+        }
+        try {
+            getProductItemToCart(flagRunFinish, mAdapter, mArr, getActivity());
+            clickViewProduct(getActivity(),mAdapter, mArr);
+        } catch (Exception e) {
+            Log.d("BBB","(222) Lỗi trong ProductFragment: " + e.getMessage());
+        }
 
     }
 
-
-
-    @Override
-    public void onStart() {
-
-        super.onStart();
-
-    }
     public static void clickViewProduct(FragmentActivity fragmentActivity, ProductAdapter adapter, List<Product> arr)
     {
         adapter.setOnItemToView(new OnlistenerClickToView() {
@@ -192,7 +203,6 @@ public class ProductFragment extends Fragment {
                 Intent intent = new Intent(fragmentActivity, ProductDetailActivity.class);
                 intent.putExtra(AppConstants.KEY_INTENT_VIEW_PRODUCT, arr.get(position));
                 fragmentActivity.startActivity(intent);
-
             }
         });
     }
@@ -234,9 +244,7 @@ public class ProductFragment extends Fragment {
                                         flagEnter = true; //tìm thấy sản phẩm
                                         Toast.makeText(context, "Đã thêm vào giỏ hàng", Toast.LENGTH_SHORT).show();
                                         break; //tim thay thi ko loop nua
-
                                     }
-
                                 }
                                 try {
                                 if (!flagEnter) { //nếu không có sp trùng
@@ -250,19 +258,10 @@ public class ProductFragment extends Fragment {
                                         Log.d("BBB","Sản phẩm trong giỏ:" + mGetCart.listAllCart.get(i)[0]);
                                     }
                                 }
-                                Log.d("BBB","Thêm sản phẩm thành công");
-
-
-//                                Toast Thành công
-//                            }
                                 } catch (Exception e) {
                                     Log.d("BBB","(333)Lỗi trong ProductFragment: " + e.getMessage());
                                 }
                             }
-
-
-
-
                         } else { //nếu chưa có sản phẩm nào trong giỏ hàng
                             String[] addToCart = {
                                     String.valueOf(arr.get(postiton).getId()),
@@ -270,15 +269,11 @@ public class ProductFragment extends Fragment {
                             };
                                 mGetCart.listAllCart = new ArrayList<>();
                                 mGetCart.listAllCart.add(addToCart);
-
-
                         }
 
                     }
 
                 });
-
-
             result = "Đã thêm vào giỏ hàng";
         } else {
             result = "Chưa thể thêm vào giỏ hàng";
@@ -287,96 +282,13 @@ public class ProductFragment extends Fragment {
                 public void run() {
                     try {
                         getProductItemToCart(flag, adapter, arr, context);
-
                     } catch (Exception e) {
                         Log.d("BBB","Lỗi trong ProductFragment: " + e.getMessage());
                     }
-
-
                 }//flagRunFinish
             },2000);
-
         }
         return result;
-    }
-
-    //gọi mỗi khi mở sang tab product
-    @Override
-    public void onResume() {
-        GetCart mGetCart = GetCart.getInstance();
-
-        super.onResume();
-
-        //gán lại cờ cho resume khi trang được quay lại mà ko có từ khóa search...cho phép loadmore
-//        mSearch = null;
-        mSearch = "";
-        if(isEmpty(mainActivity.mInputSearch.getText())){
-            //tra ve tong so trang
-            totalPage = (int)Math.ceil((double)mListAPI.size()/(double)itemEachPage);
-            mSearchContent.setText("");
-            currentPage = 1;
-            flagLoadmore = true;
-//            mSearch = null;
-            this.isLoading = false;
-            this.isLastpage = false;
-            GridLayoutManager layoutManager = new GridLayoutManager(getContext(),2);
-            mRecyclerView.setLayoutManager(layoutManager);
-            mAdapter = new ProductAdapter(mArr);
-            mRecyclerView.setAdapter(mAdapter);
-            setFirstData();
-            flagRunFinish = true; //chạy xong recycler ,  khi mở app lần đầu cung chạy xong flag này
-            //cuộn trang để load more
-            mRecyclerView.addOnScrollListener(new PaginationScrollListener(layoutManager, mListAPI, currentPage, flagLoadmore) {
-                @Override
-                public void loadMoreItem() {
-                    isLoading = true;
-                    currentPage += 1;
-                    //Độ trễ để đủ thời gian get dữ liệu về từ API
-
-                    loadNextPage();
-                    clickViewProduct(getActivity(), mAdapter, mArr);
-                    try {
-                        getProductItemToCart(flagRunFinish, mAdapter, mArr, getActivity());
-
-                    } catch (Exception e) {
-                        Log.d("BBB","(111) Lỗi trong ProductFragment: " + e.getMessage());
-                    }
-                }
-                @Override
-                public boolean isLoading() {
-                    return isLoading;
-                }
-                @Override
-                public boolean isLastPage() {
-                    if(currentPage >= totalPage){
-                        mAdapter.removeFooterLoading();
-                    }
-                    return isLastpage;
-                }
-            });
-
-
-
-        } else { //chuyển tab mà có dữ liệu trong input text
-            if(mainActivity.mProductFragment.getArguments() != null){
-                mSearch = mainActivity.mProductFragment.getArguments().getString("Send_fragment");
-                if(mSearch != null){
-                    mSearchContent.setText("Kết quả tìm kiểm của: " + mSearch);
-                    flagLoadmore = false;
-                    loadData(mSearch);
-                }
-            }
-        }
-        try {
-            getProductItemToCart(flagRunFinish, mAdapter, mArr, getActivity());
-            clickViewProduct(getActivity(),mAdapter, mArr);
-        } catch (Exception e) {
-            Log.d("BBB","(222) Lỗi trong ProductFragment: " + e.getMessage());
-        }
-
-
-
-//        Log.d("BBB",mainActivity.mInputSearch.getText().toString() + " : mInputSearch");
     }
 
     private void loadData(String search){
@@ -448,17 +360,14 @@ public class ProductFragment extends Fragment {
                     mAdapter.removeFooterLoading();
                     mArr.addAll(list);
                     mAdapter.notifyDataSetChanged();
-                    if(currentPage != totalPage)mAdapter.addFooterLoading();
-
-
+                    if (currentPage != totalPage) mAdapter.addFooterLoading();
                 } else {
-                    Log.d("BBB", "Quá số trang");
+                    //quá số trang
                     isLastpage = true;
                     mAdapter.removeFooterLoading();
                 }
             }
         },1000);
-
     }
     private  List<Product> startReadAPI(){
         //Tạo 1 thread riêng đọc API, Quá trình đọc khá chậm không muốn ảnh hưởng đến main thread
@@ -492,12 +401,5 @@ public class ProductFragment extends Fragment {
         });
         threadStartRead.start();
         return list;
-
     }
-
-
-
-
-
-
 }

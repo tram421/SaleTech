@@ -9,6 +9,7 @@ import androidx.annotation.Nullable;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager.widget.ViewPager;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,6 +38,7 @@ import com.tram.saletech.API.User;
 import com.tram.saletech.API.Voucher;
 import com.tram.saletech.API.VoucherInfo;
 import com.tram.saletech.Activities.MainActivity;
+import com.tram.saletech.Navigation.Navigation;
 import com.tram.saletech.R;
 import com.tram.saletech.RecyclerView.OrderAdapter;
 
@@ -45,13 +47,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link UserFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class UserFragment extends Fragment {
-    TextView mSignUp;
     EditText mEdtUser, mEdtPass;
     Button mBtnLogin;
     ConstraintLayout mLayoutForm;
@@ -69,7 +65,6 @@ public class UserFragment extends Fragment {
     String mPhoneUser;
     String mIdproduct;
     ImageView mImgVoucher;
-    int mIdVoucher, mIdOrder;
     static CartFragment mCartFragment;
     VoucherInfo mVoucherInfo;
     OrderInfo mOrderInfo;
@@ -90,33 +85,6 @@ public class UserFragment extends Fragment {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment UserFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-
-    public static UserFragment newInstance(String param1, String param2) {
-        UserFragment fragment = new UserFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-    public void sendDatatoCartFragment(){
-
-        CartFragment cartFragment = new CartFragment();
-        Bundle bundle = new Bundle();
-        bundle.putInt("idUser", mUserId);
-        cartFragment.setArguments(bundle);
-        mCartFragment = cartFragment;
-    }
-
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,7 +92,6 @@ public class UserFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-//        sendDatatoCartFragment();
     }
 
     @Override
@@ -133,28 +100,18 @@ public class UserFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_user, container, false);
         mapping(view);
-        //Format
-//        String signup = mSignUp.getText().toString();
-//        mSignUp.setText((Html.fromHtml("<u>"+ signup + "</u>" ))); //tạo text underline
         mArr = new ArrayList<>();
         mAdapter = new OrderAdapter(mArr);
         loadPreferences();
-
         loadInfoUser(mUserId);
-
         mVoucherInfo = VoucherInfo.getInstance();
         mImgVoucher = view.findViewById(R.id.imgVoucher);
         mOrderInfo = OrderInfo.getInstance();
         mVoucherLayout = view.findViewById(R.id.voucherlayout);
         getAPIVoucher();
         loadStateAndUpdateView();
-
-
-
-            mAdapter = new OrderAdapter(mArr);
-            mRecyclerViewOrder.setAdapter(mAdapter);
-
-
+        mAdapter = new OrderAdapter(mArr);
+        mRecyclerViewOrder.setAdapter(mAdapter);
         return view;
     }
 
@@ -173,7 +130,7 @@ public class UserFragment extends Fragment {
                 resultAPI.resultUserAPI_checkLogin(user, pass).enqueue(new Callback<String>() {
                     @Override
                     public void onResponse(Call<String> call, Response<String> response) {
-                        String respontCuted = (String) response.body().subSequence(0,3); //vi ket qua tra ve là: xxx|id_user
+                        String respontCuted = (String) response.body().subSequence(0, 3); //vi ket qua tra ve là: xxx|id_user
                         if (response.body().length() > 3)
                             mUserId = Integer.valueOf(response.body().substring(4)); //lấy id user
                         if (Integer.parseInt(respontCuted) == 100) {
@@ -181,22 +138,24 @@ public class UserFragment extends Fragment {
                             Toast.makeText(getContext(), "Đăng nhập thành công", Toast.LENGTH_SHORT).show();
                             savePreferences("login", mUserId);
                             loadInfoUser(mUserId);
-                            getAPIVoucher();
-                            loadStateAndUpdateView();
-
+                            new Handler().postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    getAPIVoucher();
+                                    loadStateAndUpdateView();
+                                }
+                            },2000);
 
                         } else if (Integer.parseInt(respontCuted) == 200) {
                             Toast.makeText(getContext(), "Sai mật khẩu", Toast.LENGTH_SHORT).show();
                         } else {
                             Toast.makeText(getContext(), "Không tồn tại user", Toast.LENGTH_SHORT).show();
                         }
-
                     }
 
                     @Override
                     public void onFailure(Call<String> call, Throwable t) {
-                        Log.d("BBB",t.getMessage() + " : Trong userFragment");
-
+                        Log.d("BBB", t.getMessage() + " : Trong userFragment");
                     }
                 });
             }
@@ -206,48 +165,49 @@ public class UserFragment extends Fragment {
             public void onClick(View v) {
                 savePreferences("logout", mUserId);
                 loadStateAndUpdateView();
-
-
             }
         });
 
     }
+
     @Override
     public void onResume() {
         super.onResume();
         loadPreferences();
-
         loadInfoUser(mUserId);
         getAPIVoucher();
         loadStateAndUpdateView();
     }
+    public void sendDatatoCartFragment() {
 
-    private void getAPIVoucher()
-    {
+        CartFragment cartFragment = new CartFragment();
+        Bundle bundle = new Bundle();
+        bundle.putInt("idUser", mUserId);
+        cartFragment.setArguments(bundle);
+        mCartFragment = cartFragment;
+    }
+    private void getAPIVoucher() {
         ResultAPI callAPIvoucher = new ResultAPI();
         callAPIvoucher.getVoucherAPI(mUserId).enqueue(new Callback<List<Voucher>>() {
             @Override
             public void onResponse(Call<List<Voucher>> call, Response<List<Voucher>> response) { //kết quả chỉ có 1 voucher
-                final String imgURL  = "http://maitram.net/" + response.body().get(0).getImage();
+                final String imgURL = "http://maitram.net/" + response.body().get(0).getImage();
                 new LoadImage(mImgVoucher).execute(imgURL);
                 mVoucherInfo.valueVoucher = response.body().get(0).getValue();
                 mVoucherInfo.nameVoucher = response.body().get(0).getName();
                 mVoucherInfo.imgVoucher = imgURL;
                 mVoucherInfo.idVoucher = response.body().get(0).getId();
-
             }
 
             @Override
             public void onFailure(Call<List<Voucher>> call, Throwable t) {
-                Log.d("BBB","Lỗi trong UserFragment: " + t.getMessage());
+                Log.d("BBB", "Lỗi trong UserFragment: " + t.getMessage());
             }
         });
     }
 
 
-
-    private void savePreferences(String state, Integer userId)
-    {
+    private void savePreferences(String state, Integer userId) {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(LOGIN_STATE, getActivity().MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPreferences.edit();
         editor.putString(STATE, state);
@@ -256,40 +216,37 @@ public class UserFragment extends Fragment {
         this.mUserId = userId;
         editor.apply();
     }
-    private void loadPreferences()
-    {
+
+    private void loadPreferences() {
         SharedPreferences sharedPreferences = getActivity().getSharedPreferences(LOGIN_STATE, getActivity().MODE_PRIVATE);
         state = sharedPreferences.getString(STATE, "logout");
         mUserId = sharedPreferences.getInt(ID_USER, 0);
     }
-    private void loadStateAndUpdateView()
-    {
-                if (state.equals("login")) {
-                    mLayoutForm.setVisibility(View.GONE);
-                    mLayoutLoginSuccess.setVisibility(View.VISIBLE);
-                    mVoucherLayout.setVisibility(View.VISIBLE);
-                    mRecyclerViewOrder.setVisibility(View.VISIBLE);
-                    mUserInfo.setText("Họ tên: " + mFullNameUser + "\n" + "Điện thoại: " + mPhoneUser + "\n"
-                            + "Địa chỉ: " + mAdressUser);
-                    if(mVoucherInfo.imgVoucher != null) {
-                        new LoadImage(mImgVoucher).execute(mVoucherInfo.imgVoucher);
-                    }
-                }
-                if (state.equals("logout")) {
-                    mRecyclerViewOrder.setVisibility(View.GONE);
-                    mLayoutForm.setVisibility(View.VISIBLE);
-                    mVoucherLayout.setVisibility(View.GONE);
-                    mLayoutLoginSuccess.setVisibility(View.GONE);
-                }
-                mEdtPass.setText("");
 
-
+    private void loadStateAndUpdateView() {
+        if (state.equals("login")) {
+            mLayoutForm.setVisibility(View.GONE);
+            mLayoutLoginSuccess.setVisibility(View.VISIBLE);
+            mVoucherLayout.setVisibility(View.VISIBLE);
+            mRecyclerViewOrder.setVisibility(View.VISIBLE);
+            mUserInfo.setText("Họ tên: " + mFullNameUser + "\n" + "Điện thoại: " + mPhoneUser + "\n"
+                    + "Địa chỉ: " + mAdressUser);
+            if (mVoucherInfo.imgVoucher != null) {
+                new LoadImage(mImgVoucher).execute(mVoucherInfo.imgVoucher);
+            }
+        }
+        if (state.equals("logout")) {
+            mRecyclerViewOrder.setVisibility(View.GONE);
+            mLayoutForm.setVisibility(View.VISIBLE);
+            mVoucherLayout.setVisibility(View.GONE);
+            mLayoutLoginSuccess.setVisibility(View.GONE);
+        }
+        mEdtPass.setText("");
 
 
     }
-    private void mapping(View view)
-    {
-//        mSignUp = view.findViewById(R.id.signup);
+
+    private void mapping(View view) {
         mEdtUser = view.findViewById(R.id.user);
         mEdtPass = view.findViewById(R.id.password);
         mBtnLogin = view.findViewById(R.id.login);
@@ -299,8 +256,8 @@ public class UserFragment extends Fragment {
         mUserInfo = view.findViewById(R.id.userInfo);
         mRecyclerViewOrder = view.findViewById(R.id.recyclerViewOrder);
     }
-    private void loadInfoUser(Integer idUser)
-    {
+
+    private void loadInfoUser(Integer idUser) {
         mArr = new ArrayList<>();
         Thread threadAPI = new Thread(new Runnable() {
             @Override
@@ -311,17 +268,16 @@ public class UserFragment extends Fragment {
                 resultAPI.resultUserAPI(idUser).enqueue(new Callback<List<User>>() {
                     @Override
                     public void onResponse(Call<List<User>> call, Response<List<User>> response) {
-                        if (response.body().size() >0 ) {
+                        if (response.body().size() > 0) {
                             mFullNameUser = response.body().get(0).getName();
                             mAdressUser = response.body().get(0).getAddress();
                             mPhoneUser = response.body().get(0).getPhone();
                             mIdproduct = response.body().get(0).getIdproduct();
-//                mIdVoucher = Integer.parseInt(String.valueOf(response.body().get(0).getIdVoucher()));
-//                mIdOrder = Integer.parseInt(String.valueOf(response.body().get(0).getIdOrder()));
                             sendDatatoCartFragment();
                         }
 
                     }
+
                     @Override
                     public void onFailure(Call<List<User>> call, Throwable t) {
                         Log.d("BBB", "Lỗi trong UserFragment" + t.getMessage());
@@ -331,7 +287,7 @@ public class UserFragment extends Fragment {
                 resultAPI.getOrderOfUser(mUserId).enqueue(new Callback<List<Order>>() {
                     @Override
                     public void onResponse(Call<List<Order>> call, Response<List<Order>> response) {
-                        if(response.body().size() > 0) {
+                        if (response.body().size() > 0) {
                             mOrderInfo.descriptionOrder = new String[response.body().size()];
                             mOrderInfo.idOrder = new int[response.body().size()];
                             mOrderInfo.statusOrder = new int[response.body().size()];
@@ -341,8 +297,8 @@ public class UserFragment extends Fragment {
                                 mOrderInfo.statusOrder[i] = response.body().get(i).getStatus();
                             }
                             for (int i = 0; i < mOrderInfo.idOrder.length; i++) {
-                                if(mOrderInfo.statusOrder[i] != 3)
-                                     mArr.add(new Order(mOrderInfo.idOrder[i], mOrderInfo.statusOrder[i], mOrderInfo.descriptionOrder[i])  );
+                                if (mOrderInfo.statusOrder[i] != 3)
+                                    mArr.add(new Order(mOrderInfo.idOrder[i], mOrderInfo.statusOrder[i], mOrderInfo.descriptionOrder[i]));
                             }
                             try {
                                 Thread.sleep(500);
@@ -353,7 +309,6 @@ public class UserFragment extends Fragment {
                             mAdapter.notifyDataSetChanged();
                             mRecyclerViewOrder.setAdapter(mAdapter);
                         }
-
                     }
 
                     @Override
@@ -366,15 +321,7 @@ public class UserFragment extends Fragment {
                     }
                 });
             }
-
-
-
         });
         threadAPI.start();
-
-
-
     }
-
-
 }

@@ -37,11 +37,6 @@ import java.net.Proxy;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link CartFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class CartFragment extends Fragment {
 
     String mListProductInCart;
@@ -61,49 +56,9 @@ public class CartFragment extends Fragment {
     TextView mTxtVoucher;
     Button mBtnOrder;
     OrderInfo mOrderInfo;
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public CartFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment CartFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static CartFragment newInstance(String param1, String param2) {
-        CartFragment fragment = new CartFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        mcount = 0;
-//        mArr = Product.getMock();
-        callIdUserFromUserFragment();
-
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
     }
 
     @Override
@@ -112,17 +67,8 @@ public class CartFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_cart, container, false);
         callAPI();
-//        UserFragment userFragment = new UserFragment();
-//        String m;
-//        m = userFragment.getArguments().getString("mParam1");
-   
-
-//        Bundle bundle = this.getArguments();
-
-//        if (bundle != null) {
-//            String myInt = bundle.getString("mParam1", "");
-//            Log.d("BBB",myInt + "Trong cartFragment");
-//        }
+        mcount = 0;
+        callIdUserFromUserFragment();
         mTxtEmptyCart = view.findViewById(R.id.emtyCart);
         mGetCart = GetCart.getInstance();
         mRecyclerView = view.findViewById(R.id.recyclerViewInCart);
@@ -133,8 +79,6 @@ public class CartFragment extends Fragment {
         mOrderInfo = OrderInfo.getInstance();
         setRecyclerView(view);
         loadInfoUser(mIdUser);
-
-
         mBtnOrder.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -152,9 +96,54 @@ public class CartFragment extends Fragment {
         });
         return view;
     }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                mArr = mGetCart.listProductInCart(mAllProduct.listAllProduct, mGetCart.listAllCart);
+                //cập nhật cart môi khi chuyển sang thẻ cart
+                if (mGetCart.listAllCart != null) {
+                    mArr.clear();
+                    for (int i = 0; i < mGetCart.listAllCart.size(); i++) {
+                        for (int j = 0; j < mAllProduct.listAllProduct.size(); j++) {
+                            String id = mAllProduct.listAllProduct.get(j).getId();
+                            if (mGetCart.listAllCart.get(i)[0].equals(id)) {
+                                mArr.add(mAllProduct.listAllProduct.get(j));//
+                            }
+                        }
+                    }
+                    if (mArr.size() > 0) {
+                        mTxtEmptyCart.setVisibility(View.GONE);
+                    }
+                    if (mArr.size() > 1) {
+                        updateRecyclerView();
+                    }
+                }
+                getBill();
+            }
+        },500);
+    }
+
+    @Override
+    public void onStart() {
+        //chờ load xong
+        super.onStart();
+        getBill();
+    }
+    //  Lưu dữ liệu lại lên database khi tắt app
+    @Override
+    public void onStop() {
+        super.onStop();
+        saveCartToServer(mGetCart, mIdUser);
+    }
+
+
     /*
     listProduct có dạng: 1of2,5of3....
-     */
+    */
     private void sendOrder(int userID, String listProduct, int idVoucher, int totalBill, String description)
     {
         ResultAPI insertToOrderTable = new ResultAPI();
@@ -166,24 +155,21 @@ public class CartFragment extends Fragment {
                     Toast.makeText(getActivity(), "Đặt hàng thành công", Toast.LENGTH_SHORT).show();
                 }
             }
-
             @Override
             public void onFailure(Call<String> call, Throwable t) {
                 Log.d("BBB","Insert dữ liệu từ Cart Fragment thất bại: " + t.getMessage());
             }
         });
-
-
         Toast.makeText(getActivity(), "Nhấn đặt hàng" + totalBill, Toast.LENGTH_SHORT).show();
     }
-    private void setRecyclerView(View view)
+    private void updateRecyclerView()
     {
-        if (mArr.size() > 0) {
 
+        mArr = mGetCart.listProductInCart(mAllProduct.listAllProduct, mGetCart.listAllCart);
+        if (mArr.size() > 0) {
             mAdapter = new CartAdapter(mArr);
             mRecyclerView.setAdapter(mAdapter);
             mTxtEmptyCart.setVisibility(View.GONE);
-
             mAdapter.setOnItemClickListener(new OnListenerItem() {
                 @Override
                 public void onClick(int position) {
@@ -194,9 +180,24 @@ public class CartFragment extends Fragment {
                     getBill();
                 }
             });
-
-
-
+        }
+    }
+    private void setRecyclerView(View view)
+    {
+        if (mArr.size() > 0) {
+            mAdapter = new CartAdapter(mArr);
+            mRecyclerView.setAdapter(mAdapter);
+            mTxtEmptyCart.setVisibility(View.GONE);
+            mAdapter.setOnItemClickListener(new OnListenerItem() {
+                @Override
+                public void onClick(int position) {
+//                Toast.makeText(MainActivity.this, mArrNowFoodVns.get(position).getName(), Toast.LENGTH_SHORT).show();
+                    mArr.remove(position); //xoa trong mang
+                    mAdapter.notifyItemRemoved(Integer.parseInt(position + "")); //xóa 1 item
+                    mGetCart.listAllCart = mGetCart.remove(position,mGetCart.listAllCart);
+                    getBill();
+                }
+            });
         } else {
 //            Chua get du lieu
             new Handler().postDelayed(new Runnable() {
@@ -206,80 +207,6 @@ public class CartFragment extends Fragment {
                 }
             },200);
         }
-        
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-
-
-
-//                loadInfoUser(mIdUser); //lấy thông tin user
-
-                mArr = mGetCart.listProductInCart(mAllProduct.listAllProduct, mGetCart.listAllCart);
-                //cập nhật cart môi khi chuyển sang thẻ cart
-                if (mGetCart.listAllCart != null) {
-                    mArr.clear();
-                    for (int i = 0; i < mGetCart.listAllCart.size(); i++) {
-                        for (int j = 0; j < mAllProduct.listAllProduct.size(); j++) {
-                            String id = mAllProduct.listAllProduct.get(j).getId();
-                            if (mGetCart.listAllCart.get(i)[0].equals(id)) {
-                                mArr.add(mAllProduct.listAllProduct.get(j));
-//
-                            }
-                        }
-                    }
-                    if (mArr.size() > 0) {
-                        mTxtEmptyCart.setVisibility(View.GONE);
-                    }
-                    if (mArr.size() > 1) {
-                        updateRecyclerView();
-                    }
-                }
-
-                getBill(); //1
-            }
-        },500);
-
-
-    }
-
-
-    private void updateRecyclerView()
-    {
-
-        mArr = mGetCart.listProductInCart(mAllProduct.listAllProduct, mGetCart.listAllCart);
-        if (mArr.size() > 0) {
-            mAdapter = new CartAdapter(mArr);
-            mRecyclerView.setAdapter(mAdapter);
-            mTxtEmptyCart.setVisibility(View.GONE);
-
-            mAdapter.setOnItemClickListener(new OnListenerItem() {
-                @Override
-                public void onClick(int position) {
-//                Toast.makeText(MainActivity.this, mArrNowFoodVns.get(position).getName(), Toast.LENGTH_SHORT).show();
-                    mArr.remove(position); //xoa trong mang
-                    mAdapter.notifyItemRemoved(Integer.parseInt(position + "")); //xóa 1 item
-                    mGetCart.listAllCart = mGetCart.remove(position,mGetCart.listAllCart);
-                    getBill();
-                }
-            });
-        }
-
-    }
-    //  Lưu dữ liệu lại lên database khi tắt app
-    @Override
-    public void onStop() {
-        super.onStop();
-        saveCartToServer(mGetCart, mIdUser);
-
-
-
     }
     public static void saveCartToServer(GetCart mGetCart, int mIdUser)
     {
@@ -296,32 +223,15 @@ public class CartFragment extends Fragment {
                             Log.d("BBB","Lỗi: trong CartFragment: Không gửi được dữ liệu lên server");
                         }
                     }
-
                     @Override
                     public void onFailure(Call<String> call, Throwable t) {
 
                     }
                 });
             }
-
-
         } else {
             Log.d("BBB","Không có gì để lưu");
         }
-    }
-
-
-    @Override
-    public void onStart() {
-
-        //chờ load xong
-
-        super.onStart();
-        getBill();
-
-
-        
-
     }
     //hàm tính tiền
     private int getBill()
@@ -365,7 +275,6 @@ public class CartFragment extends Fragment {
                     }
                     callAPI();
                 } else {
-                    
                     ResultAPI resultAPI = new ResultAPI();
                     resultAPI.init();
                     resultAPI.resultUserAPI(mIdUser).enqueue(new Callback<List<User>>() {
@@ -393,13 +302,9 @@ public class CartFragment extends Fragment {
                                                             mArr.add(response.body().get(j));
                                                         }
                                                     }
-
-
                                                 }
                                                 flagWaitCallAPI = true;
-
                                             }
-
                                             @Override
                                             public void onFailure(Call<List<Product>> call, Throwable t) {
                                                 Log.d("BBB", "Lỗi từ cart fragment: " + t.getMessage());
@@ -408,10 +313,7 @@ public class CartFragment extends Fragment {
                             } else {
                                 Log.d("BBB","Trong CartFragment: Chưa có dữ liệu trong giỏ - begin");
                             }
-
-
                         }
-
                         @Override
                         public void onFailure(Call<List<User>> call, Throwable t) {
                             Log.d("BBB",t.getMessage() +  " : Trong CartFragment");
@@ -421,7 +323,6 @@ public class CartFragment extends Fragment {
             }
         });
         threadCallAPI.start();
-
     }
     private synchronized void callIdUserFromUserFragment()
     {
@@ -447,11 +348,6 @@ public class CartFragment extends Fragment {
             } else { //gọi đệ quy quá nhiều lần vẫn chưa get được dữ liệu
                 Log.d("BBB"," Trong cart fragment: Không lấy được dữ liệu từ userfragment trả qua");
             }
-
-
-
-
-
     }
     private void loadInfoUser(Integer idUser)
     {

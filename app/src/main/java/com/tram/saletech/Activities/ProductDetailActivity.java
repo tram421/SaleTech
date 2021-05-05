@@ -59,10 +59,6 @@ public class ProductDetailActivity extends AppCompatActivity {
         mBtnAddCart = findViewById(R.id.btnAddtoCartdetail);
         mGetCart = GetCart.getInstance();
         mImg = findViewById(R.id.imagedetail);
-//        Intent intent = getIntent();
-//        String chuoi = intent.getStringExtra("chuoi");
-//        Toast.makeText(this, chuoi, Toast.LENGTH_SHORT).show();
-//        Log.d("BBB",chuoi + "product activiti");
 
 
         mWcontent.setOnTouchListener(new View.OnTouchListener() {

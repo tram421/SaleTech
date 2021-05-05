@@ -50,7 +50,6 @@ import com.tram.saletech.Service.GetDataService;
 import static android.text.TextUtils.isEmpty;
 
 public class MainActivity extends AppCompatActivity {
-    private GoogleMap gm;
     private BroadcastInternet mMyBroadCast;
     ViewPager mViewPager;
     BottomNavigationView bottomNavigationView;
@@ -58,42 +57,25 @@ public class MainActivity extends AppCompatActivity {
     public EditText mInputSearch;
     ImageView mIconSearch;
     public ProductFragment mProductFragment = new ProductFragment();
-    public HomeFragment mHomeFragment = new HomeFragment();
     private String send;
     private String get;
-    String SearchData_from_searchForm;
     public void setGet(String get) {
         this.get = get;
-    }
-
-    public String getSend() {
-        return send;
     }
 
     public String getGet() {
         return get;
     }
     public static boolean active = false;
-    //    SendData sendData;
-    String mData;
     int mPressBackCount = 0;
     ImageView mClearSearch;
 
-//    @Override
-//    public void getSearchInput(String searchString) {
-////        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT );
-////        HomeFragment homeFragment = (HomeFragment) viewPagerAdapter.getItem(0);
-////        homeFragment.getSearchInput(searchString);
-//        Log.d("BBB",searchString);
-//    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-
-
-
-
+        //kiểm tra kết nối internet
         boolean connected = false;
         ConnectivityManager connectivityManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
         if(connectivityManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState() == NetworkInfo.State.CONNECTED ||
@@ -108,51 +90,23 @@ public class MainActivity extends AppCompatActivity {
             Intent intent = new Intent(MainActivity.this, NoInternetActivity.class);
             startActivity(intent);
             super.onStop();
-
         }
-
-
         //broadcast
         mMyBroadCast = new BroadcastInternet();
         IntentFilter filter = new IntentFilter("android.example.sendBroadcast");
         filter.addAction(WifiManager.SUPPLICANT_CONNECTION_CHANGE_ACTION);
         registerReceiver(mMyBroadCast, filter);
-        //check internet
-        setContentView(R.layout.activity_main);
+
         active = true;
-
-//        public void sendDataToActivity()
-//    {
-////            iSendData = mainActivity;
-//            String string = mInputSearch.getText().toString().trim();
-////            iSendData.send_from_HomeFragment(string);
-//        }
-        //start service
-        Intent intent = new Intent(MainActivity.this, GetDataService.class);
-        intent.putExtra("chuoi", "123");
-        startService(intent);
-//        ContextCompat.startForegroundService(MainActivity.this, intent);
-
-    }
-
-    @Override
-    protected void onStart() {
-        super.onStart();
+//        Intent intent = new Intent(MainActivity.this, GetDataService.class);
+//        startService(intent);
         //bottom navigation
         mViewPager = findViewById(R.id.home_viewPager);
         bottomNavigationView = findViewById(R.id.bottomNav_view);
-        //setupViewPager();
         mNavigation.setupViewPager(mViewPager, bottomNavigationView, this);
-//        mbtn1 = findViewById(R.id.btn1);
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), FragmentStatePagerAdapter.BEHAVIOR_RESUME_ONLY_CURRENT_FRAGMENT );
-        HomeFragment homeFragment = (HomeFragment) viewPagerAdapter.getItem(0);
         mInputSearch = findViewById(R.id.mysearch);
         mIconSearch = findViewById(R.id.iconSearch);
         mClearSearch = findViewById(R.id.clearSearch);
-//        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
-
-//        mHomeFragment = sendDatatoFragment();
-//        mProductFragment = sendDatatoFragment();
         mIconSearch.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -170,7 +124,11 @@ public class MainActivity extends AppCompatActivity {
                 mInputSearch.setText("");
             }
         });
+
+
     }
+
+
 
     public void onBackPressed() {
         mPressBackCount++;
@@ -183,12 +141,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    // Hàm trong interface để lấy dữ liệu từ Homefragment
-//    @Override
-    public void send_to_ProductFragment(String data) {
-//        this.SearchData_from_searchForm = data;
-//        sendDatatoFragment();
-//        Log.d("BBB",SearchData_from_searchForm);
+    /*
+     *  Hàm chuyển dữ liệu để tìm kiếm khi nhập vào edit text ở main thì chuyển sang cho fragment
+     */
+    private void send_to_ProductFragment(String data) {
         ProductFragment productFragment = new ProductFragment();
         Bundle bundle = new Bundle();
         bundle.putString("Send_fragment", data);
@@ -202,32 +158,9 @@ public class MainActivity extends AppCompatActivity {
                 mNavigation.getmViewPager().setCurrentItem(0);
                 mNavigation.getmViewPager().setCurrentItem(1);
             }
-
-    }
-
-    public ProductFragment sendDatatoFragment(){
-
-        ProductFragment productFragment = new ProductFragment();
-        Bundle bundle = new Bundle();
-        bundle.putString("Send_fragment", "this.SearchData_from_searchForm");
-        productFragment.setArguments(bundle);
-        return productFragment;
     }
 
 
-    @Override
-    public void onPointerCaptureChanged(boolean hasCapture) {
-
-    }
-
-
-//    @Override
-//    public void sendString(String string) {
-//        Intent intent = new Intent(MainActivity.this, ProductActivity.class);
-//        intent.putExtra("chuoi",string);
-//        startActivity(intent);
-//
-//    }
 
 
 }
